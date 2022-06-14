@@ -23,8 +23,8 @@ $app = new Laravel\Lumen\Application(
     dirname(__DIR__)
 );
 
-// $app->withFacades();
-
+$app->withFacades();
+$app->configure('database');
 // $app->withEloquent();
 
 /*
@@ -47,6 +47,13 @@ $app->singleton(
     Illuminate\Contracts\Console\Kernel::class,
     App\Console\Kernel::class
 );
+$app->singleton(Illuminate\Session\SessionManager::class, function () use ($app) {
+    return $app->loadComponent('session', Illuminate\Session\SessionServiceProvider::class, 'session');
+});
+
+$app->singleton('session.store', function () use ($app) {
+    return $app->loadComponent('session', Illuminate\Session\SessionServiceProvider::class, 'session.store');
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -105,11 +112,21 @@ $app->configure('app');
 | can respond to, as well as the controllers that may handle them.
 |
 */
+$app->routeMiddleware([
+    'auth' => App\Http\Middleware\Authenticate::class,
+]);
+
+$app->middleware([
+    \Illuminate\Session\Middleware\StartSession::class,
+    App\Http\Middleware\CorsMiddleware::class,
+]);
+$app->register(App\Providers\CatchAllOptionsRequestsProvider::class);
+$app->register(Illuminate\Redis\RedisServiceProvider::class);
 
 $app->router->group([
     'namespace' => 'App\Http\Controllers',
 ], function ($router) {
-    require __DIR__.'/../routes/web.php';
+    require __DIR__.'/../routes/api.php';
 });
 
 return $app;
