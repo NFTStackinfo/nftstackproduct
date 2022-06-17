@@ -31,7 +31,7 @@ class WaitListController extends Controller
 
 
         $email = new \SendGrid\Mail\Mail();
-        $email->setFrom("product@nftstack.info", "Webly");
+        $email->setFrom("info@webly.pro", "Webly");
         $email->setSubject("Thank you for joining the Webly waitlist!");
         $email->addTo($mail);
         $email->setTemplateId('d-9bf89a4de7f24e04813144d8ac22bfeb');
