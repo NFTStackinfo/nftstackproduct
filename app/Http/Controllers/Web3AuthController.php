@@ -12,7 +12,14 @@ class Web3AuthController
     public function message(Request $request): \Illuminate\Http\response {
         $nonce = Str::random();
         $redis = app('redis');
-        $redis->set('sign_message', $nonce);
+        $address = $request->input('address');
+
+        if ($address == '' || $address == null) {
+            return response(['msg' => 'error no address'], 404)
+                ->header('Content-Type', 'application/json');
+        }
+
+        $redis->set($request->input($address), $nonce);
 
         return response(['msg' => 'success', 'nonce' => $nonce], 200)
             ->header('Content-Type', 'application/json');
@@ -20,12 +27,20 @@ class Web3AuthController
 
     public function verify(Request $request): \Illuminate\Http\response {
         $redis = app('redis');
-        $result = $this->verifySignature($redis->get('sign_message'), $request->input('signature'), $request->input('address'));
+        $address = $request->input('address');
+
+        if ($address == '' || $address == null) {
+            return response(['msg' => 'error no address'], 404)
+                ->header('Content-Type', 'application/json');
+        }
+
+        $result = $this->verifySignature($redis->get($address), $request->input('signature'), $address);
+        $responce = md5($request->input('signature').'c324jn3ovn2o3nvo&T%^&%');
 
         $status = $result ? 200 : 401;
         $msg = $result ? 'success' : 'failed';
 
-        return response(['msg' => $msg], $status)
+        return response(['msg' => $msg, 'hash' => $responce], $status)
             ->header('Content-Type', 'application/json');
     }
 

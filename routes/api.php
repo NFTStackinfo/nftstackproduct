@@ -6,10 +6,8 @@
 
 $router->group(['prefix' => 'api/v1'], function () use ($router) {
     $router->get('/', 'MainController@main');
-//    $router->group(['middleware' => ['web']], function () use ($router) {
-//        $router->get('/login-message', 'Web3AuthController@message');
-//        $router->post('/login-verify', 'Web3AuthController@verify');
-//    });
+
+    $router->get('/sendEmail', 'WaitListController@sendEmail');
 
     $router->get('/login-message', 'Web3AuthController@message');
     $router->post('/login-verify', 'Web3AuthController@verify');

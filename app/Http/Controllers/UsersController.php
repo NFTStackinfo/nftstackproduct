@@ -14,5 +14,15 @@ class UsersController extends Controller
         //
     }
 
+    // todo
+    public function createUser() {
+
+    }
+
+    // todo
+    public function updateUser() {
+
+    }
+
     //
 }

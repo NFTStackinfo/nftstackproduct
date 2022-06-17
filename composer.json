@@ -10,6 +10,7 @@
         "kornrunner/keccak": "^1.1",
         "laravel/lumen-framework": "^9.0",
         "predis/predis": "^2.0",
+        "sendgrid/sendgrid": "^8.0",
         "simplito/elliptic-php": "^1.0"
     },
     "require-dev": {
