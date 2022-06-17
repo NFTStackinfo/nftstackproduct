@@ -20,7 +20,7 @@ class WaitListController extends Controller
         }
 
         if (!filter_var($mail, FILTER_VALIDATE_EMAIL)) {
-            return response(['msg' => 'Invalid address'], 406)
+            return response(['msg' => 'Invalid email'], 406)
                 ->header('Content-Type', 'application/json');
         }
         $checker = WaitList::checkEmail($mail);
