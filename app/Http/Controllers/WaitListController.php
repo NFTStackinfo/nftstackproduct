@@ -15,17 +15,17 @@ class WaitListController extends Controller
     public function sendEmail(Request $request) {
         $mail = $request->input('email');
         if (empty($mail)) {
-            return response(['msg' => 'Error no email'], 405)
+            return response(['msg' => 'Error no email', 'success' => false], 404)
                 ->header('Content-Type', 'application/json');
         }
 
         if (!filter_var($mail, FILTER_VALIDATE_EMAIL)) {
-            return response(['msg' => 'Invalid email'], 406)
+            return response(['msg' => 'Invalid email', 'success' => false], 404)
                 ->header('Content-Type', 'application/json');
         }
         $checker = WaitList::checkEmail($mail);
         if ($checker) {
-            return response(['msg' => 'Email already in waitlist'], 407)
+            return response(['msg' => 'Email already in waitlist', 'success' => false], 404)
                 ->header('Content-Type', 'application/json');
         }
 
@@ -40,10 +40,10 @@ class WaitListController extends Controller
         try {
             WaitList::setEmail($mail);
             $response = $sendgrid->send($email);
-            return response(['msg' => 'success'], $response->statusCode())
+            return response(['msg' => 'success', 'success' => true], $response->statusCode())
                 ->header('Content-Type', 'application/json');
         } catch (Exception $e) {
-            return response(['msg' => $e->getMessage()], 404)
+            return response(['msg' => $e->getMessage(), 'success' => false], 404)
                 ->header('Content-Type', 'application/json');
         }
     }
