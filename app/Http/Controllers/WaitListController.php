@@ -14,7 +14,7 @@ class WaitListController extends Controller
      */
     public function sendEmail(Request $request) {
         $mail = $request->input('email');
-        $mail = 'abraham.chuljyan98@gmail.com';
+        //$mail = 'abraham.chuljyan98@gmail.com';
         if (empty($mail)) {
             return response(['msg' => 'error no address'], 404)
                 ->header('Content-Type', 'application/json');
