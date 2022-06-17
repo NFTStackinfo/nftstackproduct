@@ -14,31 +14,27 @@ class WaitListController extends Controller
      */
     public function sendEmail(Request $request) {
         $mail = $request->input('email');
-        //$mail = 'abraham.chuljyan98@gmail.com';
         if (empty($mail)) {
-            return response(['msg' => 'error no address'], 404)
+            return response(['msg' => 'Error no email'], 405)
                 ->header('Content-Type', 'application/json');
         }
 
         if (!filter_var($mail, FILTER_VALIDATE_EMAIL)) {
-            return response(['msg' => 'Invalid address'], 404)
+            return response(['msg' => 'Invalid address'], 406)
                 ->header('Content-Type', 'application/json');
         }
         $checker = WaitList::checkEmail($mail);
         if ($checker) {
-            return response(['msg' => 'Email already in waitlist'], 404)
+            return response(['msg' => 'Email already in waitlist'], 407)
                 ->header('Content-Type', 'application/json');
         }
 
 
         $email = new \SendGrid\Mail\Mail();
         $email->setFrom("product@nftstack.info", "Webly");
-        $email->setSubject("Sending with SendGrid is Fun");
-        $email->addTo($mail, "Example User");
-        $email->addContent("text/plain", "and easy to do anywhere, even with PHP");
-        $email->addContent(
-            "text/html", "<strong>and easy to do anywhere, even with PHP</strong>"
-        );
+        $email->setSubject("Thank you for joining the Webly waitlist!");
+        $email->addTo($mail);
+        $email->setTemplateId('d-9bf89a4de7f24e04813144d8ac22bfeb');
 
         $sendgrid = new \SendGrid(getenv('SENDGRID_API_KEY'));
         try {
