@@ -36,9 +36,12 @@ class WaitListController extends Controller
         $email->addTo($mail);
         $email->setTemplateId('d-9bf89a4de7f24e04813144d8ac22bfeb');
 
+        $unsubscribe = md5(md5(md5('no24ECH(&#(@#OCHWBdb9h9dd' . $mail)));
+        $email->addDynamicTemplateData('unsubscribe', 'https://'.$request->getHttpHost().'/api/v1/unsubscribe/'.$unsubscribe);
+
         $sendgrid = new \SendGrid(getenv('SENDGRID_API_KEY'));
         try {
-            WaitList::setEmail($mail);
+            WaitList::setEmail($mail, $unsubscribe);
             $response = $sendgrid->send($email);
             return response(['msg' => 'success', 'success' => true], $response->statusCode())
                 ->header('Content-Type', 'application/json');
@@ -46,5 +49,21 @@ class WaitListController extends Controller
             return response(['msg' => $e->getMessage(), 'success' => false], 404)
                 ->header('Content-Type', 'application/json');
         }
+    }
+
+
+    /**
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory
+     */
+    public function unsubscribe($id) {
+        $updated = WaitList::updateEmail($id);
+        if($updated == 0) {
+            return response(['msg' => 'Wrong hash', 'success' => false], 404)
+                ->header('Content-Type', 'application/json');
+        }
+        return response(['msg' => 'You are successfully unsubscribed', 'success' => true], 200)
+            ->header('Content-Type', 'application/json');
     }
 }

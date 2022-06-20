@@ -16,6 +16,8 @@ return new class extends Migration
         Schema::create('wait_list', function (Blueprint $table) {
             $table->id();
             $table->string('email', 64);
+            $table->string('unsubscribe_hash', 32);
+            $table->smallInteger('unsubscribe_status');
             $table->timestamps();
         });
     }
