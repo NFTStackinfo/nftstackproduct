@@ -26,7 +26,7 @@ class CorsMiddleware
         // Adds headers to the response
         $response->header('Access-Control-Allow-Methods', 'HEAD, GET, POST, PUT, PATCH, DELETE');
         $response->header('Access-Control-Allow-Headers', $request->header('Access-Control-Request-Headers'));
-        $response->header('Access-Control-Allow-Origin', 'webly.pro');
+        $response->header('Access-Control-Allow-Origin', ['webly.pro', 'nftsstack.io', 'webly-test.netlify.app']);
 
         // Sends it
         return $response;
