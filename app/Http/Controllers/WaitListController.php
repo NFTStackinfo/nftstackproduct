@@ -37,7 +37,7 @@ class WaitListController extends Controller
         $email->setTemplateId('d-9bf89a4de7f24e04813144d8ac22bfeb');
 
         $unsubscribe = md5(md5(md5('no24ECH(&#(@#OCHWBdb9h9dd' . $mail)));
-        $email->addDynamicTemplateData('unsubscribe', 'https://'.$request->getHttpHost().'/api/v1/unsubscribe/'.$unsubscribe);
+        $email->addDynamicTemplateData('unsubscribe', 'https://webly.pro/unsubscribe/' . $unsubscribe);
 
         $sendgrid = new \SendGrid(getenv('SENDGRID_API_KEY'));
         try {
