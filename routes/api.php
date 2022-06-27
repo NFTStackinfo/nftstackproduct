@@ -12,9 +12,14 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
 
     $router->get('/login-message', 'Web3AuthController@message');
     $router->post('/login-verify', 'Web3AuthController@verify');
+    $router->post('/logout', 'Web3AuthController@logOut');
 
     $router->group(['middleware' => 'auth'], function () use ($router) {
         $router->get('/main', 'MainController@main');
+
+        $router->post('/contract/create', 'ContractController@create');
+        $router->post('/contract/update', 'ContractController@update');
+        $router->get('/contract/get/{address}', 'ContractController@get');
     });
 });
 
