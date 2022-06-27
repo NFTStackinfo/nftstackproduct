@@ -49,14 +49,13 @@ class WaitList extends Model implements AuthenticatableContract, AuthorizableCon
      * @return bool
      */
     public static function setEmail($email, $unsubscribe) {
-        DB::table('wait_list')->insert([
+        return DB::table('wait_list')->insert([
             'email' => $email,
             'unsubscribe_hash' => $unsubscribe,
             'unsubscribe_status' => 0,
             'created_at' => date('Y-m-d H:i:s', time()),
             'updated_at' => date('Y-m-d H:i:s', time())
         ]);
-        return true;
     }
 
     /**
