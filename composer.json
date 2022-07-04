@@ -6,6 +6,7 @@
     "type": "project",
     "require": {
         "php": "^8.0",
+        "darkaonline/swagger-lume": "9.*",
         "illuminate/redis": "^9.17",
         "kornrunner/keccak": "^1.1",
         "laravel/lumen-framework": "^9.0",

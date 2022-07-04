@@ -24,6 +24,7 @@ $app = new Laravel\Lumen\Application(
 );
 
 $app->withFacades();
+$app->configure('swagger-lume');
 $app->configure('database');
 // $app->withEloquent();
 
@@ -122,6 +123,7 @@ $app->middleware([
 ]);
 $app->register(App\Providers\CatchAllOptionsRequestsProvider::class);
 $app->register(Illuminate\Redis\RedisServiceProvider::class);
+$app->register(\SwaggerLume\ServiceProvider::class);
 
 $app->router->group([
     'namespace' => 'App\Http\Controllers',
