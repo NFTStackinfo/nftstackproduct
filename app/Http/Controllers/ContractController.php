@@ -10,8 +10,159 @@ use kornrunner\Keccak;
 
 class ContractController extends Controller
 {
-
     /**
+     * @OA\Post(
+     * path="/api/v1/contract/create",
+     * summary="Create Contract",
+     * tags={"Contract"},
+     * @OA\Parameter(
+     *    description="Metamask Address",
+     *    in="path",
+     *    name="address",
+     *    required=false,
+     *    example="0x9DbF14C79847D1566419dCddd5ad35DAf0382E05",
+     *    @OA\Schema(
+     *       type="string",
+     *    )
+     * ),
+     * @OA\Parameter(
+     *    description="Name of Collection",
+     *    in="path",
+     *    name="collectionName",
+     *    required=false,
+     *    example="NFT Stack",
+     *    @OA\Schema(
+     *       type="string",
+     *    )
+     * ),
+     * @OA\Parameter(
+     *    description="Symbol of Collection",
+     *    in="path",
+     *    name="collectionSymbol",
+     *    required=false,
+     *    example="NFTS",
+     *    @OA\Schema(
+     *       type="string",
+     *    )
+     * ),
+     * @OA\Parameter(
+     *    description="Metadata Base Uri",
+     *    in="path",
+     *    name="metadataUri",
+     *    required=false,
+     *    example="https://racingsocialclub.mypinata.cloud/ipfs/Qmcozo8XKVWXGCMNjtaQvAtvopz2A62Y5qrpygmJKSWcXr/",
+     *    @OA\Schema(
+     *       type="string",
+     *    )
+     * ),
+     * @OA\Parameter(
+     *    description="Deployed Mainnet Address",
+     *    in="path",
+     *    name="mainnetAddress",
+     *    required=false,
+     *    example="0x45c4B350BB6aE5836AfC78aaF06d2bEf6367AA7b",
+     *    @OA\Schema(
+     *       type="string",
+     *    )
+     * ),
+     * @OA\Parameter(
+     *    description="Deployed Rinkeby Address",
+     *    in="path",
+     *    name="rinkebyAddress",
+     *    required=false,
+     *    example="0x45c4B350BB6aE5836AfC78aaF06d2bEf6367AA7b",
+     *    @OA\Schema(
+     *       type="string",
+     *    )
+     * ),
+     * @OA\Parameter(
+     *    description="Mint Price",
+     *    in="path",
+     *    name="mintPrice",
+     *    required=false,
+     *    example="0.15",
+     *    @OA\Schema(
+     *       type="float",
+     *    )
+     * ),
+     * @OA\Parameter(
+     *    description="Presale Mint Price",
+     *    in="path",
+     *    name="presaleMintPrice",
+     *    required=false,
+     *    example="0.1",
+     *    @OA\Schema(
+     *       type="float",
+     *    )
+     * ),
+     * @OA\Parameter(
+     *    description="Total Count of Collection",
+     *    in="path",
+     *    name="totalCount",
+     *    required=false,
+     *    example="5555",
+     *    @OA\Schema(
+     *       type="integer",
+     *    )
+     * ),
+     * @OA\Parameter(
+     *    description="Limit Per Wallet for Public Mint",
+     *    in="path",
+     *    name="limitPerWallet",
+     *    required=false,
+     *    example="5",
+     *    @OA\Schema(
+     *       type="integer",
+     *    )
+     * ),
+     * @OA\Parameter(
+     *    description="Limit Per Wallet for Presale Mint",
+     *    in="path",
+     *    name="presaleLimitPerWallet",
+     *    required=false,
+     *    example="3",
+     *    @OA\Schema(
+     *       type="integer",
+     *    )
+     * ),
+     * @OA\Parameter(
+     *    description="Chain Id, for example Polygon Chain Id is 2",
+     *    in="path",
+     *    name="chainId",
+     *    required=false,
+     *    example="2",
+     *    @OA\Schema(
+     *       type="integer",
+     *    )
+     * ),
+     * @OA\Parameter(
+     *    description="Contract Type Id, for example ERC1155 Type Id is 3",
+     *    in="path",
+     *    name="typeId",
+     *    required=false,
+     *    example="3",
+     *    @OA\Schema(
+     *       type="integer",
+     *    )
+     * ),
+     * @OA\RequestBody(
+     *    required=true,
+     *    description="Pass Client credentials",
+     *    @OA\JsonContent(
+     *       required={"address","limitPerWallet"},
+     *       @OA\Property(property="address", type="string", format="string", example="0x9DbF14C79847D1566419dCddd5ad35DAf0382E05"),
+     *       @OA\Property(property="limitPerWallet", type="integer", format="integer", example="5"),
+     *    ),
+     * ),
+     * @OA\Response(
+     *    response=200,
+     *    description="Successfully created",
+     *    @OA\JsonContent(
+     *       @OA\Property(property="msg", type="string", example="Successfully created")
+     *        )
+     *     )
+     * )
+     *
      * @param Request $request
      * @return \Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory
      */
