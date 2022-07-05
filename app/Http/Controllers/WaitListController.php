@@ -53,7 +53,6 @@ class WaitListController extends Controller
 
 
     /**
-     * @param Request $request
      * @param $id
      * @return \Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory
      */

@@ -24,5 +24,20 @@ php artisan make:migration create_{table_name}_table
 
 ## Run server on port
 ````
-php -S localhost:8000 -t public
+php -S localhost:8000 public/index.php
+````
+
+## Swagger Documentation
+
+to publish configs (config/swagger-lume.php)
+````
+php artisan swagger-lume:publish-config 
+````
+
+Make configuration changes if needed, to publish everything
+````
+php artisan swagger:generate
+````
+````
+php artisan swagger-lume:publish
 ````

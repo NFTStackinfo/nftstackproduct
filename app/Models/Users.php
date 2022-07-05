@@ -7,6 +7,7 @@ use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Laravel\Lumen\Auth\Authorizable;
 
 class Users extends Model implements AuthenticatableContract, AuthorizableContract
@@ -37,4 +38,12 @@ class Users extends Model implements AuthenticatableContract, AuthorizableContra
     protected $hidden = [
         'api_key',
     ];
+
+    /**
+     * @param string $address
+     * @return \Illuminate\Support\Collection
+     */
+    public static function getIdByAddress(string $address) {
+        return DB::table('users')->select('id')->where('address', $address)->get();
+    }
 }

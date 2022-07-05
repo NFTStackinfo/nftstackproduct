@@ -9,6 +9,10 @@ use kornrunner\Keccak;
 
 class Web3AuthController
 {
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\response
+     */
     public function message(Request $request): \Illuminate\Http\response {
         $nonce = Str::random();
         $redis = app('redis');
@@ -25,6 +29,12 @@ class Web3AuthController
             ->header('Content-Type', 'application/json');
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\response
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
     public function verify(Request $request): \Illuminate\Http\response {
         $redis = app('redis');
         $address = $request->input('address');
@@ -44,6 +54,34 @@ class Web3AuthController
             ->header('Content-Type', 'application/json');
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory|void
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    public function logOut(Request $request) {
+        $redis = app('redis');
+        $address = $request->input('address');
+        $nonce = $redis->get($address);
+        if(empty($nonce) || $nonce == '') {
+            return response(['msg' => 'error something wrong'], 404)
+                ->header('Content-Type', 'application/json');
+        }
+
+        $redis->set($request->input($address), 'exit');
+
+        return response(['msg' => 'success', 'nonce' => $nonce], 200)
+            ->header('Content-Type', 'application/json');
+    }
+
+    /**
+     * @param string $message
+     * @param string $signature
+     * @param string $address
+     * @return bool
+     * @throws \Exception
+     */
     protected function verifySignature(string $message, string $signature, string $address) {
         $hash = Keccak::hash(sprintf("\x19Ethereum Signed Message:\n%s%s", strlen($message), $message), 256);
         $sign = [
