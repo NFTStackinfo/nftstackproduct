@@ -40,10 +40,55 @@ class Users extends Model implements AuthenticatableContract, AuthorizableContra
     ];
 
     /**
-     * @param string $address
-     * @return \Illuminate\Support\Collection
+     * @param array $data
+     * @return bool
      */
-    public static function getIdByAddress(string $address) {
-        return DB::table('users')->select('id')->where('address', $address)->get();
+    public static function createUser(array $data): bool {
+        return DB::table('users')->insert([
+            'wallet' => $data['wallet'],
+            'email' => !empty($data['email']) ? $data['email']: null,
+            'metadata_uri' => self::generateRandomString(),
+            'created_at' => date('Y-m-d H:i:s', time()),
+            'updated_at' => date('Y-m-d H:i:s', time())
+        ]);
+    }
+
+    /**
+     * @param int $length
+     * @return string
+     */
+    public static function generateRandomString(int $length = 32): string {
+        $characters = '0123456789!@#$%^&*()))_+|}{?><:abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $characters_length = strlen($characters);
+        $random_string = '';
+        for ($i = 0; $i < $length; $i++) {
+            $random_string .= $characters[rand(0, $characters_length - 1)];
+        }
+        return $random_string;
+    }
+
+    /**
+     * @param string $address
+     * @return int
+     */
+    public static function getIdByAddress(string $address): int {
+        $result = DB::table('users')->select('id')->where('address', $address)->get();
+        if (empty($result)) {
+            return 0;
+        }
+
+        return $result[0]->id;
+    }
+
+    /**
+     * @param int $id
+     * @param string $email
+     * @return int
+     */
+    public static function updateEmail(int $id, string $email): int {
+        $data['updated_at'] = date('Y-m-d H:i:s', time());
+        $data['email'] = $email;
+
+        return DB::table('contract')->where('id', '=', $id)->update($data);
     }
 }

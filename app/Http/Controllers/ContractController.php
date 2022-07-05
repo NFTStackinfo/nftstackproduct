@@ -247,5 +247,55 @@ class ContractController extends Controller
         $user_id = Users::getIdByAddress($address);
     }
 
-    //
+
+    /**
+     * @OA\Get(
+     * path="/api/v1/contract/get/all",
+     * summary="Log Out",
+     * tags={"Authentication"},
+     * @OA\Parameter(
+     *    description="Metamask Address",
+     *    in="path",
+     *    name="address",
+     *    required=true,
+     *    example="0x9DbF14C79847D1566419dCddd5ad35DAf0382E05",
+     *    @OA\Schema(
+     *       type="string",
+     *    )
+     * ),
+     * @OA\RequestBody(
+     *    required=true,
+     *    description="User wallet address",
+     *    @OA\JsonContent(
+     *       required={"address"},
+     *       @OA\Property(property="address", type="string", format="string", example="0x9DbF14C79847D1566419dCddd5ad35DAf0382E05"),
+     *    ),
+     * ),
+     * @OA\Response(
+     *    response=200,
+     *    description="Successfully logouted",
+     *    @OA\JsonContent(
+     *       @OA\Property(property="nonce", type="object", example="vsv433dc")
+     *        )
+     *     )
+     * )
+     *
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory
+     */
+    public function getUserContracts(Request $request) {
+        $address = $request->input('address');
+
+        if (empty($address)) {
+            return response(['msg' => 'Error wallet address', 'success' => false], 404)
+                ->header('Content-Type', 'application/json');
+        }
+
+        $user_id = Users::getIdByAddress($address);
+        $contracts = Contract::getContract(['collection_name', 'collection_symbol'], [['id' => $user_id]]);
+
+        return response(['msg' => 'Successfully created', 'contracts' => $contracts,'success' => true], 200)
+            ->header('Content-Type', 'application/json');
+    }
 }
