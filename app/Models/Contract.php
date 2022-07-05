@@ -37,7 +37,7 @@ class Contract extends Model implements AuthenticatableContract, AuthorizableCon
      * @param array $data
      * @return bool
      */
-    public static function createContract(array $data) {
+    public static function createContract(array $data): bool {
         return DB::table('contract')->insert([
             'collection_name' => $data['collection_name'],
             'collection_symbol' => $data['collection_symbol'],
@@ -64,10 +64,10 @@ class Contract extends Model implements AuthenticatableContract, AuthorizableCon
      * @param string $operator
      * @return int
      */
-    public static function updateContract(array $where, array $data, string $operator = '=') {
+    public static function updateContract(array $where, array $data, string $operator = '='): int {
         $data['updated_at'] = date('Y-m-d H:i:s', time());
 
-        return DB::table('contract')->where(key($where), $operator, $where)->update([$data]);
+        return DB::table('contract')->where(key($where), $operator, $where)->update($data);
     }
 
     /**

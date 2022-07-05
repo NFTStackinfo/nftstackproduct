@@ -10,6 +10,36 @@ use kornrunner\Keccak;
 class Web3AuthController
 {
     /**
+     * @OA\Get(
+     * path="/api/v1/login-message",
+     * summary="Create nonce",
+     * tags={"Authentication"},
+     * @OA\Parameter(
+     *    description="Metamask Address",
+     *    in="path",
+     *    name="address",
+     *    required=true,
+     *    example="0x9DbF14C79847D1566419dCddd5ad35DAf0382E05",
+     *    @OA\Schema(
+     *       type="string",
+     *    )
+     * ),
+     * @OA\RequestBody(
+     *    required=true,
+     *    description="User wallet address",
+     *    @OA\JsonContent(
+     *       required={"address"},
+     *       @OA\Property(property="address", type="string", format="string", example="0x9DbF14C79847D1566419dCddd5ad35DAf0382E05"),
+     *    ),
+     * ),
+     * @OA\Response(
+     *    response=200,
+     *    description="Geting nonce for verify",
+     *    @OA\JsonContent(
+     *       @OA\Property(property="nonce", type="string", example="vsv433dc")
+     *        )
+     *     )
+     * )
      * @param Request $request
      * @return \Illuminate\Http\response
      */
@@ -30,6 +60,49 @@ class Web3AuthController
     }
 
     /**
+     *
+     * @OA\Post(
+     * path="/api/v1/login-verify",
+     * summary="Verify Login",
+     * tags={"Authentication"},
+     * @OA\Parameter(
+     *    description="Metamask Address",
+     *    in="path",
+     *    name="address",
+     *    required=true,
+     *    example="0x9DbF14C79847D1566419dCddd5ad35DAf0382E05",
+     *    @OA\Schema(
+     *       type="string",
+     *    )
+     * ),
+     * @OA\Parameter(
+     *    description="Signature",
+     *    in="path",
+     *    name="signature",
+     *    required=true,
+     *    example="0x3DbF14C79847D1566419dCddd5ad35DAf0382E0514C79847D1566419dCddd5a",
+     *    @OA\Schema(
+     *       type="string",
+     *    )
+     * ),
+     * @OA\RequestBody(
+     *    required=true,
+     *    description="User wallet address",
+     *    @OA\JsonContent(
+     *       required={"address"},
+     *       @OA\Property(property="address", type="string", format="string", example="0x9DbF14C79847D1566419dCddd5ad35DAf0382E05"),
+     *       @OA\Property(property="signature", type="string", format="string", example="0x3DbF14C79847D1566419dCddd5ad35DAf0382E0514C79847D1566419dCddd5a"),
+     *    ),
+     * ),
+     * @OA\Response(
+     *    response=200,
+     *    description="Successfuly Verified",
+     *    @OA\JsonContent(
+     *       @OA\Property(property="hash", type="string", example="79847D1566419dCddd5C79847")
+     *        )
+     *     )
+     * )
+     *
      * @param Request $request
      * @return \Illuminate\Http\response
      * @throws \Psr\Container\ContainerExceptionInterface
@@ -38,13 +111,19 @@ class Web3AuthController
     public function verify(Request $request): \Illuminate\Http\response {
         $redis = app('redis');
         $address = $request->input('address');
+        $signature = $request->input('signature');
 
-        if ($address == '' || $address == null) {
-            return response(['msg' => 'error no address'], 404)
+        if (empty($signature)) {
+            return response(['msg' => 'Error signature not found'], 404)
                 ->header('Content-Type', 'application/json');
         }
 
-        $result = $this->verifySignature($redis->get($address), $request->input('signature'), $address);
+        if (empty($address)) {
+            return response(['msg' => 'Error address not found'], 404)
+                ->header('Content-Type', 'application/json');
+        }
+
+        $result = $this->verifySignature($redis->get($address), $signature, $address);
         $responce = md5($request->input('signature').'c324jn3ovn2o3nvo&T%^&%');
 
         $status = $result ? 200 : 401;
@@ -55,6 +134,37 @@ class Web3AuthController
     }
 
     /**
+     * @OA\Get(
+     * path="/api/v1/logout",
+     * summary="Log Out",
+     * tags={"Authentication"},
+     * @OA\Parameter(
+     *    description="Metamask Address",
+     *    in="path",
+     *    name="address",
+     *    required=true,
+     *    example="0x9DbF14C79847D1566419dCddd5ad35DAf0382E05",
+     *    @OA\Schema(
+     *       type="string",
+     *    )
+     * ),
+     * @OA\RequestBody(
+     *    required=true,
+     *    description="User wallet address",
+     *    @OA\JsonContent(
+     *       required={"address"},
+     *       @OA\Property(property="address", type="string", format="string", example="0x9DbF14C79847D1566419dCddd5ad35DAf0382E05"),
+     *    ),
+     * ),
+     * @OA\Response(
+     *    response=200,
+     *    description="Successfully logouted",
+     *    @OA\JsonContent(
+     *       @OA\Property(property="nonce", type="string", example="vsv433dc")
+     *        )
+     *     )
+     * )
+     *
      * @param Request $request
      * @return \Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory|void
      * @throws \Psr\Container\ContainerExceptionInterface
@@ -63,9 +173,15 @@ class Web3AuthController
     public function logOut(Request $request) {
         $redis = app('redis');
         $address = $request->input('address');
+
+        if (empty($address)) {
+            return response(['msg' => 'Error address not found'], 404)
+                ->header('Content-Type', 'application/json');
+        }
+
         $nonce = $redis->get($address);
         if(empty($nonce) || $nonce == '') {
-            return response(['msg' => 'error something wrong'], 404)
+            return response(['msg' => 'Error something wrong'], 404)
                 ->header('Content-Type', 'application/json');
         }
 
