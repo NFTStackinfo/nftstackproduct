@@ -251,8 +251,8 @@ class ContractController extends Controller
     /**
      * @OA\Get(
      * path="/api/v1/contract/get/all",
-     * summary="Log Out",
-     * tags={"Authentication"},
+     * summary="Get User Contracts",
+     * tags={"Contract"},
      * @OA\Parameter(
      *    description="Metamask Address",
      *    in="path",
