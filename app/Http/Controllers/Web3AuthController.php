@@ -11,7 +11,7 @@ class Web3AuthController
 {
     /**
      * @OA\Get(
-     * path="/api/v1/login-message",
+     * path="/api/v1/login-message/{address}",
      * summary="Create nonce",
      * tags={"Authentication"},
      * @OA\Parameter(
@@ -24,14 +24,6 @@ class Web3AuthController
      *       type="string",
      *    )
      * ),
-     * @OA\RequestBody(
-     *    required=true,
-     *    description="User wallet address",
-     *    @OA\JsonContent(
-     *       required={"address"},
-     *       @OA\Property(property="address", type="string", format="string", example="0x9DbF14C79847D1566419dCddd5ad35DAf0382E05"),
-     *    ),
-     * ),
      * @OA\Response(
      *    response=200,
      *    description="Geting nonce for verify",
@@ -41,12 +33,12 @@ class Web3AuthController
      *     )
      * )
      * @param Request $request
+     * @param String $address
      * @return \Illuminate\Http\response
      */
-    public function message(Request $request): \Illuminate\Http\response {
+    public function message(Request $request, string $address): \Illuminate\Http\response {
         $nonce = Str::random();
         $redis = app('redis');
-        $address = $request->input('address');
 
         if ($address == '' || $address == null) {
             return response(['msg' => 'error no address'], 404)
@@ -135,7 +127,7 @@ class Web3AuthController
 
     /**
      * @OA\Get(
-     * path="/api/v1/logout",
+     * path="/api/v1/logout/{address}",
      * summary="Log Out",
      * tags={"Authentication"},
      * @OA\Parameter(
@@ -148,14 +140,6 @@ class Web3AuthController
      *       type="string",
      *    )
      * ),
-     * @OA\RequestBody(
-     *    required=true,
-     *    description="User wallet address",
-     *    @OA\JsonContent(
-     *       required={"address"},
-     *       @OA\Property(property="address", type="string", format="string", example="0x9DbF14C79847D1566419dCddd5ad35DAf0382E05"),
-     *    ),
-     * ),
      * @OA\Response(
      *    response=200,
      *    description="Successfully logouted",
@@ -166,13 +150,13 @@ class Web3AuthController
      * )
      *
      * @param Request $request
+     * @param String $address
      * @return \Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory|void
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function logOut(Request $request) {
+    public function logOut(Request $request, string $address) {
         $redis = app('redis');
-        $address = $request->input('address');
 
         if (empty($address)) {
             return response(['msg' => 'Error address not found'], 404)

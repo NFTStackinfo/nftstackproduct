@@ -8,9 +8,9 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
     $router->post('/sendEmail', 'WaitListController@sendEmail');
     $router->post('/unsubscribe/{id}', 'WaitListController@unsubscribe');
 
-    $router->get('/login-message', 'Web3AuthController@message');
+    $router->get('/login-message/{address}', 'Web3AuthController@message');
     $router->post('/login-verify', 'Web3AuthController@verify');
-    $router->get('/logout', 'Web3AuthController@logOut');
+    $router->get('/logout/{address}', 'Web3AuthController@logOut');
 
     $router->post('/user/create', 'UsersController@create');
     $router->post('/user/updateEmail', 'UsersController@updateEmail');
@@ -21,7 +21,7 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
         $router->post('/contract/create', 'ContractController@create');
         $router->post('/contract/update', 'ContractController@update');
         $router->get('/contract/get/{address}', 'ContractController@get');
-        $router->get('/contract/get/all', 'ContractController@getUserContracts');
+        $router->get('/contract/all/{address}', 'ContractController@getUserContracts');
     });
 });
 
