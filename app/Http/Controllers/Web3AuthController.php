@@ -40,12 +40,12 @@ class Web3AuthController
         $nonce = Str::random();
         $redis = app('redis');
 
-        if ($address == '' || $address == null) {
-            return response(['msg' => 'error no address'], 404)
+        if (empty($address)) {
+            return response(['msg' => 'Error address not found'], 404)
                 ->header('Content-Type', 'application/json');
         }
 
-        $redis->set($request->input($address), $nonce);
+        $redis->set($address, $nonce);
 
         return response(['msg' => 'success', 'nonce' => $nonce], 200)
             ->header('Content-Type', 'application/json');
