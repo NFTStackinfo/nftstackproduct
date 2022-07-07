@@ -250,7 +250,7 @@ class ContractController extends Controller
 
     /**
      * @OA\Get(
-     * path="/api/v1/contract/get/all",
+     * path="/api/v1/contract/all/{address}",
      * summary="Get User Contracts",
      * tags={"Contract"},
      * @OA\Parameter(
@@ -282,9 +282,10 @@ class ContractController extends Controller
      *
      *
      * @param Request $request
+     * @param String $address
      * @return \Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory
      */
-    public function getUserContracts(Request $request) {
+    public function getUserContracts(Request $request, string $address) {
         $address = $request->input('address');
 
         if (empty($address)) {
