@@ -16,9 +16,9 @@ class Authenticate
      */
     public function handle($request, Closure $next) {
         $redis = app('redis');
-        $address1 = $request->input('address');
+        $address1 = $request->header('address');
         $address2 = $redis->get($address1);
-        if (empty($address1) || $address1 == '' || $address1 == 'exit' || $address1 != $address2) {
+        if (empty($address1) || $address1 == 'exit' || empty($address2)) {
             if(empty($nonce) || $nonce == '') {
                 return response(['msg' => 'Unauthorized'], 401)
                     ->header('Content-Type', 'application/json');

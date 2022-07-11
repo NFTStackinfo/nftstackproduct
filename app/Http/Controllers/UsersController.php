@@ -14,16 +14,6 @@ class UsersController extends Controller
      * summary="Create User",
      * tags={"User"},
      * @OA\Parameter(
-     *    description="Metamask Address",
-     *    in="path",
-     *    name="address",
-     *    required=true,
-     *    example="0x9DbF14C79847D1566419dCddd5ad35DAf0382E05",
-     *    @OA\Schema(
-     *       type="string",
-     *    )
-     * ),
-     * @OA\Parameter(
      *    description="Email",
      *    in="path",
      *    name="email",
@@ -54,7 +44,7 @@ class UsersController extends Controller
      * @return Response|\Laravel\Lumen\Http\ResponseFactory
      */
     public function create(Request $request) {
-        $address = $request->input('address');
+        $address = $request->header('address');
         $email = $request->input('email');
         if (empty($address)) {
             return response(['msg' => 'Error wallet address', 'success' => false], 404)
@@ -123,7 +113,7 @@ class UsersController extends Controller
      * @return Response|\Laravel\Lumen\Http\ResponseFactory
      */
     public function updateEmail(Request $request) {
-        $address = $request->input('address');
+        $address = $request->header('address');
         $email = $request->input('email');
         if (empty($address)) {
             return response(['msg' => 'Error wallet address', 'success' => false], 404)

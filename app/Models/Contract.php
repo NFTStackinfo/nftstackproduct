@@ -27,7 +27,7 @@ class Contract extends Model implements AuthenticatableContract, AuthorizableCon
      * @var string[]
      */
     protected $fillable = [
-        'collection_name', 'collection_symbol', 'mainnet_address', 'rinkeby_address', 'metadata_uri', 'mint_price',
+        'collection_name', 'project_name', 'collection_symbol', 'mainnet_address', 'rinkeby_address', 'metadata_uri', 'mint_price',
         'presale_mint_price', 'total_count', 'limit_per_transaction', 'limit_per_wallet', 'presale_limit_per_wallet',
         'user_id', 'chain_id', 'type_id'
     ];
@@ -40,6 +40,7 @@ class Contract extends Model implements AuthenticatableContract, AuthorizableCon
     public static function createContract(array $data): bool {
         return DB::table('contract')->insert([
             'collection_name' => $data['collection_name'],
+            'project_name' => $data['project_name'],
             'collection_symbol' => $data['collection_symbol'],
             'metadata_uri' => $data['metadata_uri'],
             'mainnet_address' => $data['mainnet_address'],
@@ -57,6 +58,7 @@ class Contract extends Model implements AuthenticatableContract, AuthorizableCon
             'updated_at' => date('Y-m-d H:i:s', time())
         ]);
     }
+
 
     /**
      * @param array $where
@@ -77,7 +79,7 @@ class Contract extends Model implements AuthenticatableContract, AuthorizableCon
      * @param string $objectOperator // For example 'where' 'orWhere'
      * @return \Illuminate\Support\Collection
      */
-    public static function getContract(array $select, array $where, string $objectOperator = 'where') {
+    public static function getContract(array $select, array $where, string $objectOperator = 'and') {
         $select = DB::table('contract')->select($select);
         foreach ($where as $item) {
             $operator = $item['operator'];
@@ -91,5 +93,17 @@ class Contract extends Model implements AuthenticatableContract, AuthorizableCon
         }
 
         return $select->get();
+    }
+
+    /**
+     * @param $user_id
+     * @param $contract_id
+     * @return \Illuminate\Support\Collection
+     */
+    public static function getWihdrawalAddress($user_id, $contract_id) {
+        return DB::table('withdrawal_addresses')->select(['address', 'percent'])
+            ->where('id', '=', $user_id)
+            ->where('contract_id', '=', $contract_id)
+            ->get();
     }
 }

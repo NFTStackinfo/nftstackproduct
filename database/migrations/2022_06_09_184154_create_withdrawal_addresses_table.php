@@ -18,6 +18,7 @@ return new class extends Migration
             $table->bigInteger('user_id');
             $table->bigInteger('contract_id');
             $table->string('address', 42);
+            $table->string('percent', 42);
             $table->timestamps();
         });
     }
