@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Users;
 use Elliptic\EC;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -14,16 +15,6 @@ class Web3AuthController
      * path="/api/v1/login-message/{address}",
      * summary="Create nonce",
      * tags={"Authentication"},
-     * @OA\Parameter(
-     *    description="Metamask Address",
-     *    in="path",
-     *    name="address",
-     *    required=true,
-     *    example="0x9DbF14C79847D1566419dCddd5ad35DAf0382E05",
-     *    @OA\Schema(
-     *       type="string",
-     *    )
-     * ),
      * @OA\Response(
      *    response=200,
      *    description="Geting nonce for verify",
@@ -47,7 +38,7 @@ class Web3AuthController
 
         $redis->set($address, $nonce);
 
-        return response(['msg' => 'success', 'nonce' => $nonce], 200)
+        return response(['msg' => 'success', 'nonce' => $nonce, 'success' => true], 200)
             ->header('Content-Type', 'application/json');
     }
 
@@ -57,16 +48,6 @@ class Web3AuthController
      * path="/api/v1/login-verify",
      * summary="Verify Login",
      * tags={"Authentication"},
-     * @OA\Parameter(
-     *    description="Metamask Address",
-     *    in="path",
-     *    name="address",
-     *    required=true,
-     *    example="0x9DbF14C79847D1566419dCddd5ad35DAf0382E05",
-     *    @OA\Schema(
-     *       type="string",
-     *    )
-     * ),
      * @OA\Parameter(
      *    description="Signature",
      *    in="path",
@@ -102,7 +83,7 @@ class Web3AuthController
      */
     public function verify(Request $request): \Illuminate\Http\response {
         $redis = app('redis');
-        $address = $request->input('address');
+        $address = $request->header('address');
         $signature = $request->input('signature');
 
         if (empty($signature)) {
@@ -120,58 +101,56 @@ class Web3AuthController
 
         $status = $result ? 200 : 401;
         $msg = $result ? 'success' : 'failed';
+        $success = $result ? true : false;
 
-        return response(['msg' => $msg, 'hash' => $responce], $status)
+        if ($status == 200) {
+            $user_id = Users::getIdByAddress($address);
+            if($user_id == 0) {
+                Users::createUser(['wallet' => $address]);
+            }
+        }
+
+        return response(['msg' => $msg, 'hash' => $responce, 'success' => $success], $status)
             ->header('Content-Type', 'application/json');
     }
 
     /**
      * @OA\Get(
-     * path="/api/v1/logout/{address}",
+     * path="/api/v1/logout/",
      * summary="Log Out",
      * tags={"Authentication"},
-     * @OA\Parameter(
-     *    description="Metamask Address",
-     *    in="path",
-     *    name="address",
-     *    required=true,
-     *    example="0x9DbF14C79847D1566419dCddd5ad35DAf0382E05",
-     *    @OA\Schema(
-     *       type="string",
-     *    )
-     * ),
      * @OA\Response(
      *    response=200,
      *    description="Successfully logouted",
      *    @OA\JsonContent(
-     *       @OA\Property(property="nonce", type="string", example="vsv433dc")
+     *       @OA\Property(property="success", type="bool", example="true")
      *        )
      *     )
      * )
      *
      * @param Request $request
-     * @param String $address
      * @return \Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory|void
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function logOut(Request $request, string $address) {
+    public function logOut(Request $request) {
+        $address = $request->header('address');
         $redis = app('redis');
 
         if (empty($address)) {
-            return response(['msg' => 'Error address not found'], 404)
+            return response(['msg' => 'Error address not found', 'success' => false], 404)
                 ->header('Content-Type', 'application/json');
         }
 
         $nonce = $redis->get($address);
         if(empty($nonce) || $nonce == '') {
-            return response(['msg' => 'Error something wrong'], 404)
+            return response(['msg' => 'Error something wrong', 'success' => false], 404)
                 ->header('Content-Type', 'application/json');
         }
 
         $redis->set($request->input($address), 'exit');
 
-        return response(['msg' => 'success', 'nonce' => $nonce], 200)
+        return response(['msg' => 'Successfully log outed', 'success' => true], 200)
             ->header('Content-Type', 'application/json');
     }
 

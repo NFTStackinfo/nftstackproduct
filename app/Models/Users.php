@@ -47,7 +47,7 @@ class Users extends Model implements AuthenticatableContract, AuthorizableContra
         return DB::table('users')->insert([
             'wallet' => $data['wallet'],
             'email' => !empty($data['email']) ? $data['email']: null,
-            'metadata_uri' => self::generateRandomString(),
+            'api_key' => self::generateRandomString(),
             'created_at' => date('Y-m-d H:i:s', time()),
             'updated_at' => date('Y-m-d H:i:s', time())
         ]);
@@ -72,7 +72,7 @@ class Users extends Model implements AuthenticatableContract, AuthorizableContra
      * @return int
      */
     public static function getIdByAddress(string $address): int {
-        $result = DB::table('users')->select('id')->where('address', $address)->get();
+        $result = DB::table('users')->select('id')->where('wallet', $address)->get();
         if (empty($result)) {
             return 0;
         }
