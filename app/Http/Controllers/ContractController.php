@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Contract;
 use App\Models\Users;
+use App\Models\WithdrawalAddresses;
 use App\Services\EthereumValidator;
 use Illuminate\Http\Request;
 use kornrunner\Keccak;
@@ -155,6 +156,7 @@ class ContractController extends Controller
         $project_name = $request->input('projectName');
         $collection_symbol = $request->input('collectionSymbol');
         $metadata_uri = $request->input('metadataUri');
+        $walletAddresses = $request->input('walletAddresses');
 
         if ((!empty($collection_name) && preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $collection_name))
         || (!empty($collection_symbol) && preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $collection_symbol))) {
@@ -171,7 +173,7 @@ class ContractController extends Controller
         $mint_price = $request->input('mintPrice');
         $presale_mint_price = $request->input('presaleMintPrice');
         $total_count = $request->input('totalCount');
-        $limit_per_transaction = $request->input('limitPerTransaction');
+        # $limit_per_transaction = $request->input('limitPerTransaction');
         $limit_per_wallet = $request->input('limitPerWallet');
         $presale_limit_per_wallet = $request->input('presaleLimitPerWallet');
         $reserve_count = $request->input('reserveCount');
@@ -193,7 +195,7 @@ class ContractController extends Controller
             'mint_price' => $mint_price,
             'presale_mint_price' => $presale_mint_price,
             'total_count' => $total_count,
-            'limit_per_transaction' => $limit_per_transaction,
+            'limit_per_transaction' => null,
             'limit_per_wallet' => $limit_per_wallet,
             'reserve_count' => $reserve_count,
             'presale_limit_per_wallet' => $presale_limit_per_wallet,
@@ -201,9 +203,19 @@ class ContractController extends Controller
             'chain_id' => null,
             'type_id' => $type_id,
         ]);
-        if($contract == 0) {
+
+        if(!$contract) {
             return response(['msg' => 'error something wrong', 'success' => false], 404)
                 ->header('Content-Type', 'application/json');
+        }
+
+        foreach ($walletAddresses as $item) {
+            WithdrawalAddresses::create([
+                'user_id' => $user_id,
+                'contract_id' => $contract,
+                'percent' => $item['split'],
+                'address' => $item['address'],
+            ]);
         }
 
         return response(['msg' => 'Successfully created', 'success' => true], 200)
@@ -335,7 +347,7 @@ class ContractController extends Controller
     public function get(Request $request, string $id) {
         $address = $request->header('address');
         $user_id = Users::getIdByAddress($address);
-        $contracts = Contract::getContract(['*'], [['id' => $id], ['user_id' => $user_id]]);
+        $contracts = Contract::getContract(['*'], [['id' => $id, 'operator' => '='], ['user_id' => $user_id, 'operator' => '=']]);
 
         return response(['msg' => 'Successfully created', 'contracts' => $contracts,'success' => true], 200)
             ->header('Content-Type', 'application/json');
@@ -386,7 +398,7 @@ class ContractController extends Controller
         }
 
         $user_id = Users::getIdByAddress($address);
-        $contracts = Contract::getContract(['project_name', 'collection_name', 'collection_symbol', 'updated_date', 'type_id'], [['user_id' => $user_id]]);
+        $contracts = Contract::getContract(['project_name', 'collection_name', 'collection_symbol', 'updated_date', 'type_id'], [['user_id' => $user_id, 'operator' => '=']]);
 
         return response(['msg' => 'Successfully created', 'contracts' => $contracts,'success' => true], 200)
             ->header('Content-Type', 'application/json');
