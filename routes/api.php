@@ -23,7 +23,7 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
         $router->post('/contract/create', 'ContractController@create');
         $router->post('/contract/update', 'ContractController@update');
         $router->get('/contract/get/{id}', 'ContractController@get');
-        $router->get('/contract/get/all', 'ContractController@getUserContracts');
+        $router->get('/contract/get', 'ContractController@getUserContracts');
     });
 });
 
