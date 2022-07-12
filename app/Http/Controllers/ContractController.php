@@ -354,7 +354,7 @@ class ContractController extends Controller
 
     /**
      * @OA\Get(
-     * path="/api/v1/contract/get/all",
+     * path="/api/v1/contract/get",
      * summary="Get User Contracts",
      * tags={"Contract"},
      * @OA\Parameter(
