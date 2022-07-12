@@ -29,7 +29,7 @@ return new class extends Migration
             $table->smallInteger('limit_per_wallet');
             $table->smallInteger('presale_limit_per_wallet');
             $table->bigInteger('user_id');
-            $table->bigInteger('chain_id');
+            $table->bigInteger('chain_id')->nullable();
             $table->bigInteger('type_id');
             $table->timestamps();
         });
