@@ -152,6 +152,7 @@ class ContractController extends Controller
         $user_id = Users::getIdByAddress($address);
 
         $collection_name = $request->input('collectionName');
+        $project_name = $request->input('projectName');
         $collection_symbol = $request->input('collectionSymbol');
         $metadata_uri = $request->input('metadataUri');
 
@@ -184,6 +185,7 @@ class ContractController extends Controller
 
         $contract =  Contract::createContract([
             'collection_name' => $collection_name,
+            'project_name' => $project_name,
             'collection_symbol' => $collection_symbol,
             'metadata_uri' => $metadata_uri,
             'mainnet_address' => null,
@@ -332,8 +334,11 @@ class ContractController extends Controller
      */
     public function get(Request $request, string $id) {
         $address = $request->header('address');
-        $contract_id = $request->input('contractId');
         $user_id = Users::getIdByAddress($address);
+        $contracts = Contract::getContract(['*'], [['id' => $id], ['user_id' => $user_id]]);
+
+        return response(['msg' => 'Successfully created', 'contracts' => $contracts,'success' => true], 200)
+            ->header('Content-Type', 'application/json');
     }
 
 
@@ -381,7 +386,7 @@ class ContractController extends Controller
         }
 
         $user_id = Users::getIdByAddress($address);
-        $contracts = Contract::getContract(['collection_name', 'collection_symbol'], [['id' => $user_id]]);
+        $contracts = Contract::getContract(['project_name', 'collection_name', 'collection_symbol', 'updated_date', 'type_id'], [['user_id' => $user_id]]);
 
         return response(['msg' => 'Successfully created', 'contracts' => $contracts,'success' => true], 200)
             ->header('Content-Type', 'application/json');
