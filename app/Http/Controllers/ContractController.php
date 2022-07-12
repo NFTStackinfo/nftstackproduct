@@ -167,17 +167,13 @@ class ContractController extends Controller
 
         if ((!empty($collection_name) && preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $collection_name))
         || (!empty($collection_symbol) && preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $collection_symbol))) {
-            if(empty($nonce) || $nonce == '') {
-                return response(['msg' => 'Error specific symbols in name', 'success' => false], 404)
-                    ->header('Content-Type', 'application/json');
-            }
+            return response(['msg' => 'Error specific symbols in name', 'success' => false], 404)
+                ->header('Content-Type', 'application/json');
         }
 
         if (!filter_var($metadata_uri, FILTER_VALIDATE_URL) === false) {
-            if(empty($nonce) || $nonce == '') {
-                return response(['msg' => 'Error invalid metadata URI', 'success' => false], 404)
-                    ->header('Content-Type', 'application/json');
-            }
+            return response(['msg' => 'Error invalid metadata URI', 'success' => false], 404)
+                ->header('Content-Type', 'application/json');
         }
 
 
