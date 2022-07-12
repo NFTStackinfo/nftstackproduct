@@ -13,7 +13,7 @@ class ContractController extends Controller
     /**
      * @OA\Post(
      * path="/api/v1/contract/create",
-     * summary="Create Contract",
+     * summary="Create User Contract",
      * tags={"Contract"},
      * @OA\Parameter(
      *    description="Name of Collection",
@@ -116,20 +116,10 @@ class ContractController extends Controller
      *    )
      * ),
      * @OA\Parameter(
-     *    description="Chain Id, for example Polygon Chain Id is 2",
-     *    in="path",
-     *    name="chainId",
-     *    required=false,
-     *    example="2",
-     *    @OA\Schema(
-     *       type="integer",
-     *    )
-     * ),
-     * @OA\Parameter(
      *    description="Contract Type Id, for example ERC1155 Type Id is 3",
      *    in="path",
      *    name="typeId",
-     *    required=false,
+     *    required=true,
      *    example="3",
      *    @OA\Schema(
      *       type="integer",
@@ -188,7 +178,7 @@ class ContractController extends Controller
         $chain_id = $request->input('chainId');
         $type_id = $request->input('typeId');
         if (empty($mint_price) || empty($presale_mint_price) || empty($total_count) || empty($limit_per_wallet) || empty($presale_limit_per_wallet)
-        || empty($reserve_count) || empty($chain_id) || empty($chain_id) || empty($type_id)) {
+        || empty($reserve_count) || empty($chain_id) || empty($type_id)) {
             return response(['msg' => 'Error required params are missing', 'success' => false], 404)
                 ->header('Content-Type', 'application/json');
         }
@@ -207,7 +197,7 @@ class ContractController extends Controller
             'reserve_count' => $reserve_count,
             'presale_limit_per_wallet' => $presale_limit_per_wallet,
             'user_id' => $user_id,
-            'chain_id' => $chain_id,
+            'chain_id' => null,
             'type_id' => $type_id,
         ]);
         if($contract == 0) {
@@ -223,7 +213,7 @@ class ContractController extends Controller
     /**
      * @OA\Post(
      * path="/api/v1/contract/update",
-     * summary="Get User Contracts",
+     * summary="Update User Contract",
      * tags={"Contract"},
      * @OA\Parameter(
      *    description="Mainnet Address",
@@ -243,6 +233,16 @@ class ContractController extends Controller
      *    example="0x9DbF14C79847D1566419dCddd5ad35DAf0382E05",
      *    @OA\Schema(
      *       type="string",
+     *    )
+     * ),
+     * @OA\Parameter(
+     *    description="Chain Id",
+     *    in="path",
+     *    name="chainId",
+     *    required=false,
+     *    example="4",
+     *    @OA\Schema(
+     *       type="integer",
      *    )
      * ),
      * @OA\Parameter(
@@ -279,6 +279,7 @@ class ContractController extends Controller
     public function update(Request $request) {
         $mainnet_address = $request->input('mainnetAddress');
         $rinkeby_address = $request->input('rinkebyAddress');
+        $chain_id = $request->input('chainId');
         $contract_id = $request->input('contractId');
 
         if (empty($contract_id)) {
@@ -297,6 +298,7 @@ class ContractController extends Controller
         } else {
             $update_data['rinkeby_address'] = $rinkeby_address;
         }
+        $update_data['chain_id'] = $chain_id;
         $contract = Contract::updateContract(['id' => $contract_id], $update_data);
 
         return response(['msg' => 'Successfully created', 'success' => true], 200)
@@ -306,7 +308,7 @@ class ContractController extends Controller
     /**
      * @OA\Get(
      * path="/api/v1/contract/get/{id}",
-     * summary="Get User Contracts",
+     * summary="Get User Contract",
      * tags={"Contract"},
      * @OA\RequestBody(
      *    required=true,
