@@ -341,15 +341,13 @@ class ContractController extends Controller
      * )
      *
      *
-     * @param Request $request
+     * @param $id
      * @return \Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory
      */
-    public function get(Request $request, string $id) {
-        $address = $request->header('address');
-        $user_id = Users::getIdByAddress($address);
-        $contracts = Contract::getContract(['*'], [['id' => $id, 'operator' => '='], ['user_id' => $user_id, 'operator' => '=']]);
+    public function get($id) {
+        $contract = Contract::getContract(['*'], [['id' => $id, 'operator' => '=']]);
 
-        return response(['msg' => 'Successfully created', 'contracts' => $contracts,'success' => true], 200)
+        return response(['msg' => 'Successfully', 'contract' => $contract,'success' => true], 200)
             ->header('Content-Type', 'application/json');
     }
 
