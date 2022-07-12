@@ -171,7 +171,7 @@ class ContractController extends Controller
                 ->header('Content-Type', 'application/json');
         }
 
-        if (!filter_var($metadata_uri, FILTER_VALIDATE_URL) === false) {
+        if (!filter_var($metadata_uri, FILTER_VALIDATE_URL)) {
             return response(['msg' => 'Error invalid metadata URI', 'success' => false], 404)
                 ->header('Content-Type', 'application/json');
         }
