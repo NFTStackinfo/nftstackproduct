@@ -12,7 +12,7 @@ class Web3AuthController
 {
     /**
      * @OA\Get(
-     * path="/api/v1/login-message/{address}",
+     * path="/api/v1/login-message/",
      * summary="Create nonce",
      * tags={"Authentication"},
      * @OA\Response(
@@ -24,10 +24,10 @@ class Web3AuthController
      *     )
      * )
      * @param Request $request
-     * @param String $address
      * @return \Illuminate\Http\response
      */
-    public function message(Request $request, string $address): \Illuminate\Http\response {
+    public function message(Request $request): \Illuminate\Http\response {
+        $address = $request->header('address');
         $nonce = Str::random();
         $redis = app('redis');
 
