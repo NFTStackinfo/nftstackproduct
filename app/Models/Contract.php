@@ -48,6 +48,7 @@ class Contract extends Model implements AuthenticatableContract, AuthorizableCon
             'mint_price' => $data['mint_price'],
             'presale_mint_price' => $data['presale_mint_price'],
             'total_count' => $data['total_count'],
+            'reserve_count' => $data['reserve_count'],
             'limit_per_transaction' => $data['limit_per_transaction'],
             'limit_per_wallet' => $data['limit_per_wallet'],
             'presale_limit_per_wallet' => $data['presale_limit_per_wallet'],
