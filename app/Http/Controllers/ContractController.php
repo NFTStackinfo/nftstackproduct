@@ -6,6 +6,7 @@ use App\Models\Contract;
 use App\Models\Users;
 use App\Models\WithdrawalAddresses;
 use App\Services\EthereumValidator;
+use App\Services\Helper;
 use Illuminate\Http\Request;
 use kornrunner\Keccak;
 
@@ -347,7 +348,7 @@ class ContractController extends Controller
     public function get($id) {
         $contract = Contract::getContract(['*'], [['id' => $id, 'operator' => '=']]);
 
-        return response(['msg' => 'Successfully', 'contract' => $contract,'success' => true], 200)
+        return response(['msg' => 'Successfully', 'contract' => Helper::snakeToCamel($contract),'success' => true], 200)
             ->header('Content-Type', 'application/json');
     }
 
@@ -398,7 +399,7 @@ class ContractController extends Controller
         $user_id = Users::getIdByAddress($address);
         $contracts = Contract::getContract(['id', 'project_name', 'collection_name', 'collection_symbol', 'updated_at', 'type_id'], [['user_id' => $user_id, 'operator' => '=']]);
 
-        return response(['msg' => 'Successfully created', 'contracts' => $contracts,'success' => true], 200)
+        return response(['msg' => 'Successfully created', 'contracts' => Helper::snakeToCamel($contracts),'success' => true], 200)
             ->header('Content-Type', 'application/json');
     }
 
