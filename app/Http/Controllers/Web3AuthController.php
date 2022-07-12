@@ -12,7 +12,7 @@ class Web3AuthController
 {
     /**
      * @OA\Get(
-     * path="/api/v1/login-message/",
+     * path="/api/v1/login-message",
      * summary="Create nonce",
      * tags={"Authentication"},
      * @OA\Response(
@@ -116,7 +116,7 @@ class Web3AuthController
 
     /**
      * @OA\Get(
-     * path="/api/v1/logout/",
+     * path="/api/v1/logout",
      * summary="Log Out",
      * tags={"Authentication"},
      * @OA\Response(

@@ -73,7 +73,7 @@ class Users extends Model implements AuthenticatableContract, AuthorizableContra
      */
     public static function getIdByAddress(string $address): int {
         $result = DB::table('users')->select('id')->where('wallet', $address)->get();
-        if (empty($result)) {
+        if (empty($result[0])) {
             return 0;
         }
 
