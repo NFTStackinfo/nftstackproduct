@@ -345,10 +345,16 @@ class ContractController extends Controller
      * @param $id
      * @return \Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory
      */
-    public function get($id) {
+    public function get(Request $request, $id) {
+        $address = $request->header('address');
         $contract = Contract::getContract(['*'], [['id' => $id, 'operator' => '=']]);
 
-        return response(['msg' => 'Successfully', 'contract' => Helper::snakeToCamel($contract),'success' => true], 200)
+        $abi_data = [];
+        if (!empty($contract[0])) {
+            $abi_data = $this->compile($address, $id);
+        }
+
+        return response(['msg' => 'Successfully', 'contract' => Helper::snakeToCamel($contract), 'abi' => $abi_data,'success' => true], 200)
             ->header('Content-Type', 'application/json');
     }
 
@@ -404,13 +410,12 @@ class ContractController extends Controller
     }
 
 
+    /**
+     * @param $address
+     * @param $contract_id
+     * @return array
+     */
     public function compile($address, $contract_id) {
-//        $address = $request->header('address');
-//        $contract_id = $request->input('contract_id');
-
-        $address = '0x9DbF14C79847D1566419dCddd5ad35DAf0382E05';
-        $contract_id = 1;
-
         $user_id = Users::getIdByAddress($address);
         $contract = Contract::getContract(['*'], [['id' => $contract_id, 'operator' => '='], ['user_id' => $user_id, 'operator' => '=']])[0];
 
@@ -453,8 +458,16 @@ class ContractController extends Controller
 
         $sols = ['Address.sol', 'Context.sol', 'ERC165.sol', 'ERC721.sol', 'ERC721Enumerable.sol', 'IERC165.sol',
             'IERC721.sol', 'IERC721Enumerable.sol', 'IERC721Metadata.sol', 'IERC721Receiver.sol', 'Ownable.sol', 'Strings.sol'];
+
         foreach ($sols as $item) {
-            copy(storage_path() . '/SmartContracts/721/' . $item, $path . $item);
+            copy(storage_path() . '/SmartContracts/721/' . $item, $path . $contract_id . '/' . $item);
         }
+
+        shell_exec("solc --abi $new_smart_contract_path -o build");
+        $abi = file_get_contents(base_path() . '/build/' . $className . '.abi');
+
+        $bytecode = shell_exec("solc $new_smart_contract_path --bin");
+
+        return ['abi' => $abi, 'bytecode' => $bytecode];
     }
 }
