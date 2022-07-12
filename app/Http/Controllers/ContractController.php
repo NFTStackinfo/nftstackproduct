@@ -175,10 +175,9 @@ class ContractController extends Controller
         $presale_limit_per_wallet = $request->input('presaleLimitPerWallet');
         $reserve_count = $request->input('reserveCount');
 
-        $chain_id = $request->input('chainId');
         $type_id = $request->input('typeId');
         if (empty($mint_price) || empty($presale_mint_price) || empty($total_count) || empty($limit_per_wallet) || empty($presale_limit_per_wallet)
-        || empty($reserve_count) || empty($chain_id) || empty($type_id)) {
+        || empty($reserve_count) || empty($type_id)) {
             return response(['msg' => 'Error required params are missing', 'success' => false], 404)
                 ->header('Content-Type', 'application/json');
         }
