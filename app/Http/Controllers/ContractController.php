@@ -398,7 +398,7 @@ class ContractController extends Controller
         }
 
         $user_id = Users::getIdByAddress($address);
-        $contracts = Contract::getContract(['project_name', 'collection_name', 'collection_symbol', 'updated_date', 'type_id'], [['user_id' => $user_id, 'operator' => '=']]);
+        $contracts = Contract::getContract(['project_name', 'collection_name', 'collection_symbol', 'updated_at', 'type_id'], [['user_id' => $user_id, 'operator' => '=']]);
 
         return response(['msg' => 'Successfully created', 'contracts' => $contracts,'success' => true], 200)
             ->header('Content-Type', 'application/json');
