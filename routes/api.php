@@ -17,11 +17,10 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
 
     $router->get('/contract/compile', 'ContractController@compile');
 
-    $router->post('/contract/create', 'ContractController@create');
     $router->group(['middleware' => 'auth'], function () use ($router) {
         $router->get('/main', 'MainController@main');
 
-
+        $router->post('/contract/create', 'ContractController@create');
         $router->post('/contract/update', 'ContractController@update');
         $router->get('/contract/get/{id}', 'ContractController@get');
         $router->get('/contract/get/all', 'ContractController@getUserContracts');
