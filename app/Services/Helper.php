@@ -8,7 +8,7 @@ class Helper
         if (is_string($input)) {
             return lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $input))));
         }
-        foreach ($input as $item) {
+        foreach ($input as $item_key => $item) {
             foreach ($item as $key => $value) {
                 $item = json_decode(json_encode($item), true);
                 $new_key = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $key))));
@@ -16,8 +16,10 @@ class Helper
                 unset($item[$key]);
                 $item = json_decode(json_encode($item));
             }
+            $input[$item_key] = $item;
 
         }
+
         return $input;
     }
 }
