@@ -349,12 +349,13 @@ class ContractController extends Controller
         $address = $request->header('address');
         $contract = Contract::getContract(['*'], [['id' => $id, 'operator' => '=']]);
 
-        $abi_data = [];
-        if (!empty($contract[0])) {
-            $abi_data = $this->compile($address, $id);
+        if (empty($contract[0])) {
+            return response(['msg' => 'Successfully', 'contract' => [], 'abi' => [], 'success' => true], 200)
+                ->header('Content-Type', 'application/json');
         }
+        $abi_data = $this->compile($address, $id);
 
-        return response(['msg' => 'Successfully', 'contract' => Helper::snakeToCamel($contract), 'abi' => $abi_data,'success' => true], 200)
+        return response(['msg' => 'Successfully', 'contract' => Helper::snakeToCamel($contract)[0], 'abi' => $abi_data,'success' => true], 200)
             ->header('Content-Type', 'application/json');
     }
 
@@ -467,7 +468,10 @@ class ContractController extends Controller
         shell_exec("solc --abi $new_smart_contract_path -o $base_path/build");
         $abi = file_get_contents($base_path. '/build/' . $className . '.abi');
 
+
         $bytecode = shell_exec("solc $new_smart_contract_path --bin");
+        $bytecode = str_replace(array("\r", "\n"), '', $bytecode);
+        $bytecode = Helper::getStringBetween($bytecode, "$className.sol:$className =======Binary:", '=======');
 
         return ['abi' => $abi, 'bytecode' => $bytecode];
     }
