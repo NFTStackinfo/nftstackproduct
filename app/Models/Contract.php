@@ -35,9 +35,9 @@ class Contract extends Model implements AuthenticatableContract, AuthorizableCon
 
     /**
      * @param array $data
-     * @return bool
+     * @return int
      */
-    public static function createContract(array $data): bool {
+    public static function createContract(array $data): int {
         return DB::table('contract')->insertGetId([
             'collection_name' => $data['collection_name'],
             'project_name' => $data['project_name'],
