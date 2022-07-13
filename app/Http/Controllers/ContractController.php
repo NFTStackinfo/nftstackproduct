@@ -186,7 +186,7 @@ class ContractController extends Controller
                 ->header('Content-Type', 'application/json');
         }
 
-        $contract =  Contract::createContract([
+        $contract = Contract::createContract([
             'collection_name' => $collection_name,
             'project_name' => $project_name,
             'collection_symbol' => $collection_symbol,
