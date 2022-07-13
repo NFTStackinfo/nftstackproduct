@@ -13,7 +13,9 @@ class Helper
                 $item = json_decode(json_encode($item), true);
                 $new_key = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $key))));
                 $item[$new_key] = $value;
-                unset($item[$key]);
+                if ($key != $new_key) {
+                    unset($item[$key]);
+                }
                 $item = json_decode(json_encode($item));
             }
             $input[$item_key] = $item;
