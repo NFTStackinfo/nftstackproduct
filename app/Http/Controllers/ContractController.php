@@ -428,9 +428,9 @@ class ContractController extends Controller
         // UserSmartContract/{user_id}/{contract_id}
         if (!file_exists($path)) {
             mkdir($path, 0777, true);
-            if (!file_exists($path . $contract_id . '/')) {
-                mkdir($path . $contract_id . '/', 0777, true);
-            }
+        }
+        if (!file_exists($path . $contract_id . '/')) {
+            mkdir($path . $contract_id . '/', 0777, true);
         }
 
         $new_smart_contract_path = $path . $contract_id . '/' . $className . '.sol';
