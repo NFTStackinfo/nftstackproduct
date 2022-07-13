@@ -81,7 +81,7 @@ class ContractController extends Controller
      *    description="Total Count of Collection",
      *    in="path",
      *    name="totalCount",
-     *    required=false,
+     *    required=true,
      *    example="5555",
      *    @OA\Schema(
      *       type="integer",
@@ -91,7 +91,7 @@ class ContractController extends Controller
      *    description="Limit Per Wallet for Public Mint",
      *    in="path",
      *    name="limitPerWallet",
-     *    required=false,
+     *    required=true,
      *    example="5",
      *    @OA\Schema(
      *       type="integer",
@@ -101,7 +101,7 @@ class ContractController extends Controller
      *    description="Limit Per Wallet for Presale Mint",
      *    in="path",
      *    name="presaleLimitPerWallet",
-     *    required=false,
+     *    required=true,
      *    example="3",
      *    @OA\Schema(
      *       type="integer",
@@ -111,7 +111,7 @@ class ContractController extends Controller
      *    description="Reserve Count",
      *    in="path",
      *    name="reserveCount",
-     *    required=false,
+     *    required=true,
      *    example="50",
      *    @OA\Schema(
      *       type="integer",
@@ -225,9 +225,9 @@ class ContractController extends Controller
 
 
     /**
-     * @OA\Post(
+     * @OA\Put(
      * path="/api/v1/contract/update",
-     * summary="Update User Contract",
+     * summary="Update Mainnet or Rinkeby Addresses",
      * tags={"Contract"},
      * @OA\Parameter(
      *    description="Mainnet Address",
@@ -279,7 +279,7 @@ class ContractController extends Controller
      * ),
      * @OA\Response(
      *    response=200,
-     *    description="Successfully logouted",
+     *    description="Successfully updated",
      *    @OA\JsonContent(
      *       @OA\Property(property="success", type="object", example="true")
      *        )
@@ -313,9 +313,220 @@ class ContractController extends Controller
             $update_data['rinkeby_address'] = $rinkeby_address;
         }
         $update_data['chain_id'] = $chain_id;
-        $contract = Contract::updateContract(['id' => $contract_id], $update_data);
+        Contract::updateContract(['id' => $contract_id], $update_data);
 
-        return response(['msg' => 'Successfully created', 'success' => true], 200)
+        return response(['msg' => 'Successfully updated', 'success' => true], 200)
+            ->header('Content-Type', 'application/json');
+    }
+
+
+    /**
+     * @OA\Put(
+     * path="/api/v1/contract/edit",
+     * summary="Edit User Contract",
+     * tags={"Contract"},
+     * @OA\Parameter(
+     *    description="Contract Id",
+     *    in="path",
+     *    name="contractId",
+     *    required=true,
+     *    example="4",
+     *    @OA\Schema(
+     *       type="int",
+     *    )
+     * ),
+     * @OA\Parameter(
+     *    description="Name of Collection",
+     *    in="path",
+     *    name="collectionName",
+     *    required=true,
+     *    example="NFT Stack",
+     *    @OA\Schema(
+     *       type="string",
+     *    )
+     * ),
+     * @OA\Parameter(
+     *    description="Project Name",
+     *    in="path",
+     *    name="projectName",
+     *    required=true,
+     *    example="NFT Stack",
+     *    @OA\Schema(
+     *       type="string",
+     *    )
+     * ),
+     * @OA\Parameter(
+     *    description="Symbol of Collection",
+     *    in="path",
+     *    name="collectionSymbol",
+     *    required=true,
+     *    example="NFTS",
+     *    @OA\Schema(
+     *       type="string",
+     *    )
+     * ),
+     * @OA\Parameter(
+     *    description="Metadata Base Uri",
+     *    in="path",
+     *    name="metadataUri",
+     *    required=true,
+     *    example="https://racingsocialclub.mypinata.cloud/ipfs/Qmcozo8XKVWXGCMNjtaQvAtvopz2A62Y5qrpygmJKSWcXr/",
+     *    @OA\Schema(
+     *       type="string",
+     *    )
+     * ),
+     * @OA\Parameter(
+     *    description="Mint Price",
+     *    in="path",
+     *    name="mintPrice",
+     *    required=true,
+     *    example="0.15",
+     *    @OA\Schema(
+     *       type="float",
+     *    )
+     * ),
+     * @OA\Parameter(
+     *    description="Presale Mint Price",
+     *    in="path",
+     *    name="presaleMintPrice",
+     *    required=true,
+     *    example="0.1",
+     *    @OA\Schema(
+     *       type="float",
+     *    )
+     * ),
+     * @OA\Parameter(
+     *    description="Total Count of Collection",
+     *    in="path",
+     *    name="totalCount",
+     *    required=true,
+     *    example="5555",
+     *    @OA\Schema(
+     *       type="integer",
+     *    )
+     * ),
+     * @OA\Parameter(
+     *    description="Limit Per Wallet for Public Mint",
+     *    in="path",
+     *    name="limitPerWallet",
+     *    required=true,
+     *    example="5",
+     *    @OA\Schema(
+     *       type="integer",
+     *    )
+     * ),
+     * @OA\Parameter(
+     *    description="Limit Per Wallet for Presale Mint",
+     *    in="path",
+     *    name="presaleLimitPerWallet",
+     *    required=true,
+     *    example="3",
+     *    @OA\Schema(
+     *       type="integer",
+     *    )
+     * ),
+     * @OA\Parameter(
+     *    description="Reserve Count",
+     *    in="path",
+     *    name="reserveCount",
+     *    required=true,
+     *    example="50",
+     *    @OA\Schema(
+     *       type="integer",
+     *    )
+     * ),
+     * @OA\Parameter(
+     *    description="Contract Type Id, for example ERC1155 Type Id is 3",
+     *    in="path",
+     *    name="typeId",
+     *    required=true,
+     *    example="3",
+     *    @OA\Schema(
+     *       type="integer",
+     *    )
+     * ),
+     * @OA\RequestBody(
+     *    required=true,
+     *    description="Pass Client credentials",
+     *    @OA\JsonContent(
+     *       required={"address","limitPerWallet"},
+     *       @OA\Property(property="address", type="string", format="string", example="0x9DbF14C79847D1566419dCddd5ad35DAf0382E05"),
+     *       @OA\Property(property="limitPerWallet", type="integer", format="integer", example="5"),
+     *    ),
+     * ),
+     * @OA\Response(
+     *    response=200,
+     *    description="Successfully edited",
+     *    @OA\JsonContent(
+     *       @OA\Property(property="msg", type="string", example="Successfully created")
+     *        )
+     *     )
+     * )
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory
+     */
+    public function edit(Request $request) {
+        $address = $request->header('address');
+        $contract_id = $request->input('contractId');
+        $mint_price = $request->input('mintPrice');
+        $presale_mint_price = $request->input('presaleMintPrice');
+        $total_count = $request->input('totalCount');
+        # $limit_per_transaction = $request->input('limitPerTransaction');
+        $limit_per_wallet = $request->input('limitPerWallet');
+        $presale_limit_per_wallet = $request->input('presaleLimitPerWallet');
+        $reserve_count = $request->input('reserveCount');
+        $type_id = $request->input('typeId');
+        $collection_name = $request->input('collectionName');
+        $project_name = $request->input('projectName');
+        $collection_symbol = $request->input('collectionSymbol');
+        $metadata_uri = $request->input('metadataUri');
+        $walletAddresses = $request->input('walletAddresses');
+
+        if (empty($mint_price) || empty($presale_mint_price) || empty($total_count) || empty($limit_per_wallet) || empty($presale_limit_per_wallet)
+            || empty($reserve_count) || empty($type_id) || empty($contract_id)) {
+            return response(['msg' => 'Error required params are missing', 'success' => false], 404)
+                ->header('Content-Type', 'application/json');
+        }
+
+        $user_id = Users::getIdByAddress($address);
+        $contract = Contract::getContract(['*'], [['id' => $contract_id, 'operator' => '=']]);
+
+        if (empty($contract[0])) {
+            return response(['msg' => 'Error contract not found', 'success' => false], 404)
+                ->header('Content-Type', 'application/json');
+        }
+
+        if ((!empty($collection_name) && preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $collection_name))
+            || (!empty($collection_symbol) && preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $collection_symbol))) {
+            return response(['msg' => 'Error specific symbols in name', 'success' => false], 404)
+                ->header('Content-Type', 'application/json');
+        }
+
+        if (!filter_var($metadata_uri, FILTER_VALIDATE_URL)) {
+            return response(['msg' => 'Error invalid metadata URI', 'success' => false], 404)
+                ->header('Content-Type', 'application/json');
+        }
+
+        Contract::updateContract(['id' => $contract_id], [
+            'collection_name' => $collection_name,
+            'project_name' => $project_name,
+            'collection_symbol' => $collection_symbol,
+            'metadata_uri' => $metadata_uri,
+            'mainnet_address' => null,
+            'rinkeby_address' => null,
+            'mint_price' => $mint_price,
+            'presale_mint_price' => $presale_mint_price,
+            'total_count' => $total_count,
+            'limit_per_transaction' => null,
+            'limit_per_wallet' => $limit_per_wallet,
+            'reserve_count' => $reserve_count,
+            'presale_limit_per_wallet' => $presale_limit_per_wallet,
+            'user_id' => $user_id,
+            'chain_id' => null,
+            'type_id' => $type_id,
+        ]);
+        return response(['msg' => 'Successfully edited', 'success' => true], 200)
             ->header('Content-Type', 'application/json');
     }
 
@@ -347,12 +558,15 @@ class ContractController extends Controller
      */
     public function get(Request $request, $id) {
         $address = $request->header('address');
+        $user_id = Users::getIdByAddress($address);
         $contract = Contract::getContract(['*'], [['id' => $id, 'operator' => '=']]);
 
         if (empty($contract[0])) {
             return response(['msg' => 'Successfully', 'contract' => [], 'abi' => [], 'success' => true], 200)
                 ->header('Content-Type', 'application/json');
         }
+
+        $contract[0]['walletAddresses'] = WithdrawalAddresses::getWihdrawalAddress($user_id, $id);
         $abi_data = $this->compile($address, $id);
 
         return response(['msg' => 'Successfully', 'contract' => Helper::snakeToCamel($contract)[0], 'abi' => $abi_data,'success' => true], 200)
@@ -450,7 +664,7 @@ class ContractController extends Controller
         $smart_contract_content = str_replace('$reserveCount', $contract->reserve_count, $smart_contract_content);
         $smart_contract_content = str_replace('$reserveAtTime', $contract->reserve_count, $smart_contract_content);
 
-        $withdrawal_addresses = Contract::getWihdrawalAddress($user_id, $contract_id);
+        $withdrawal_addresses = WithdrawalAddresses::getWihdrawalAddress($user_id, $contract_id);
         $withdrawal_addresses = empty($withdrawal_addresses[0]) ? $address : $withdrawal_addresses[0]->address;
 
         $smart_contract_content = str_replace('$withdrawAddress', $withdrawal_addresses, $smart_contract_content);

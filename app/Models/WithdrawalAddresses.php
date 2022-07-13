@@ -44,4 +44,16 @@ class WithdrawalAddresses extends Model implements AuthenticatableContract, Auth
             'updated_at' => date('Y-m-d H:i:s', time())
         ]);
     }
+
+    /**
+     * @param $user_id
+     * @param $contract_id
+     * @return \Illuminate\Support\Collection
+     */
+    public static function getWihdrawalAddress($user_id, $contract_id) {
+        return DB::table('withdrawal_addresses')->select(['address', 'percent'])
+            ->where('user_id', '=', $user_id)
+            ->where('contract_id', '=', $contract_id)
+            ->get();
+    }
 }
