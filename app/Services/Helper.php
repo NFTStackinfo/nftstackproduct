@@ -8,10 +8,15 @@ class Helper
         if (is_string($input)) {
             return lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $input))));
         }
-        foreach ($input as $key => $value) {
-            $new_key = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $input))));
-            $input[$new_key] = $value;
-            unset($input[$key]);
+        foreach ($input as $item) {
+            foreach ($item as $key => $value) {
+                $item = json_decode(json_encode($item), true);
+                $new_key = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $key))));
+                $item[$new_key] = $value;
+                unset($item[$key]);
+                $item = json_decode(json_encode($item));
+            }
+
         }
         return $input;
     }
