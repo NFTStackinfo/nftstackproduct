@@ -6,3 +6,5 @@ Homestead.yaml
 .phpunit.result.cache
 **/.DS_Store
 /public/swager-ui-assets
+/storage/UsersSmartContract
+/build
