@@ -21,7 +21,8 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
         $router->get('/main', 'MainController@main');
 
         $router->post('/contract/create', 'ContractController@create');
-        $router->post('/contract/update', 'ContractController@update');
+        $router->put('/contract/update', 'ContractController@update');
+        $router->put('/contract/edit', 'ContractController@edit');
         $router->get('/contract/get/{id}', 'ContractController@get');
         $router->get('/contract/get', 'ContractController@getUserContracts');
     });
