@@ -103,7 +103,7 @@ class Contract extends Model implements AuthenticatableContract, AuthorizableCon
      */
     public static function getWihdrawalAddress($user_id, $contract_id) {
         return DB::table('withdrawal_addresses')->select(['address', 'percent'])
-            ->where('id', '=', $user_id)
+            ->where('user_id', '=', $user_id)
             ->where('contract_id', '=', $contract_id)
             ->get();
     }
