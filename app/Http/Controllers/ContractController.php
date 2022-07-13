@@ -566,7 +566,7 @@ class ContractController extends Controller
                 ->header('Content-Type', 'application/json');
         }
 
-        $contract[0]['walletAddresses'] = WithdrawalAddresses::getWihdrawalAddress($user_id, $id);
+        $contract[0]->walletAddresses = WithdrawalAddresses::getWihdrawalAddress($user_id, $id);
         $abi_data = $this->compile($address, $id);
 
         return response(['msg' => 'Successfully', 'contract' => Helper::snakeToCamel($contract)[0], 'abi' => $abi_data,'success' => true], 200)
