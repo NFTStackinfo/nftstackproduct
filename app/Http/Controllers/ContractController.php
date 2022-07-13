@@ -463,8 +463,9 @@ class ContractController extends Controller
             copy(storage_path() . '/SmartContracts/721/' . $item, $path . $contract_id . '/' . $item);
         }
 
-        shell_exec("solc --abi $new_smart_contract_path -o build");
-        $abi = file_get_contents(base_path() . '/build/' . $className . '.abi');
+        $base_path = base_path();
+        shell_exec("solc --abi $new_smart_contract_path -o $base_path/build");
+        $abi = file_get_contents($base_path. '/build/' . $className . '.abi');
 
         $bytecode = shell_exec("solc $new_smart_contract_path --bin");
 
