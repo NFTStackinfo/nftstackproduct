@@ -219,7 +219,7 @@ class ContractController extends Controller
             ]);
         }
 
-        return response(['msg' => 'Successfully created', 'success' => true], 200)
+        return response(['msg' => 'Successfully created', 'contractId' => $contract, 'success' => true], 200)
             ->header('Content-Type', 'application/json');
     }
 
