@@ -679,6 +679,7 @@ class ContractController extends Controller
         }
 
         $base_path = base_path();
+        shell_exec("rm -rf $base_path/build");
         shell_exec("solc --abi $new_smart_contract_path -o $base_path/build");
         $abi = file_get_contents($base_path. '/build/' . $className . '.abi');
 
