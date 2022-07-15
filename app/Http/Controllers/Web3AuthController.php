@@ -30,7 +30,7 @@ class Web3AuthController
         $address = $request->header('address');
         $nonce = Str::random();
         $redis = app('redis');
-
+        $redis->set($address, $nonce);
         if (empty($address)) {
             return response(['msg' => 'Error address not found'], 404)
                 ->header('Content-Type', 'application/json');
