@@ -28,7 +28,7 @@ contract $className is ERC721Enumerable, Ownable {
     uint256 public maximumAllowedTokensPerWallet = $limitPerWallet;
     uint256 public allowListMaxMint = $presaleLimitPerWallet;
 
-    address private OtherAddress = $withdrawAddress;
+    $address private OtherAddress$ = $withdrawAddress;
 
     mapping(address => bool) private _allowList;
     mapping(address => uint256) private _allowListClaimed;
@@ -237,7 +237,7 @@ contract $className is ERC721Enumerable, Ownable {
 
     function withdraw() external onlyAuthorized {
         uint balance = address(this).balance;
-        payable(OtherAddress).transfer(balance * 10000 / 10000);
+        $payable(OtherAddress).transfer(balance * 10000 / 10000);$
         payable(owner()).transfer(balance * 0 / 10000);
     }
 }

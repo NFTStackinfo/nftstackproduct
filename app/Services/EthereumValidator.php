@@ -45,10 +45,10 @@ class EthereumValidator
         $hash = Keccak::hash(strtolower($address), 256);
 
         for ($i = 0; $i < 40; $i++ ) {
-            if (ctype_alpha($address{$i})) {
-                $charInt = intval($hash{$i}, 16);
+            if (ctype_alpha($address[$i])) {
+                $charInt = intval($hash[$i], 16);
 
-                if ((ctype_upper($address{$i}) && $charInt <= 7) || (ctype_lower($address{$i}) && $charInt > 7)) {
+                if ((ctype_upper($address[$i]) && $charInt <= 7) || (ctype_lower($address[$i]) && $charInt > 7)) {
                     return false;
                 }
             }

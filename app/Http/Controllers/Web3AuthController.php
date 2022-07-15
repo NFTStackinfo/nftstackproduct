@@ -36,8 +36,6 @@ class Web3AuthController
                 ->header('Content-Type', 'application/json');
         }
 
-        $redis->set($address, $nonce);
-
         return response(['msg' => 'success', 'nonce' => $nonce, 'success' => true], 200)
             ->header('Content-Type', 'application/json');
     }
@@ -97,7 +95,7 @@ class Web3AuthController
         }
 
         $result = $this->verifySignature($redis->get($address), $signature, $address);
-        $responce = md5($request->input('signature').'c324jn3ovn2o3nvo&T%^&%');
+        $responce = md5($request->input('signature').'c324jn3ovn2o3nvo&T%^&%'.time());
 
         $status = $result ? 200 : 401;
         $msg = $result ? 'success' : 'failed';
@@ -109,6 +107,7 @@ class Web3AuthController
                 Users::createUser(['wallet' => $address]);
             }
         }
+        $redis->set($address, $responce);
 
         return response(['msg' => $msg, 'hash' => $responce, 'success' => $success], $status)
             ->header('Content-Type', 'application/json');
@@ -135,6 +134,7 @@ class Web3AuthController
      */
     public function logOut(Request $request) {
         $address = $request->header('address');
+        $hash = $request->header('hash');
         $redis = app('redis');
 
         if (empty($address)) {
@@ -142,8 +142,8 @@ class Web3AuthController
                 ->header('Content-Type', 'application/json');
         }
 
-        $nonce = $redis->get($address);
-        if(empty($nonce) || $nonce == '') {
+        $login_hash = $redis->get($address);
+        if(empty($login_hash) || $login_hash == '' || $hash != $login_hash) {
             return response(['msg' => 'Error something wrong', 'success' => false], 404)
                 ->header('Content-Type', 'application/json');
         }
