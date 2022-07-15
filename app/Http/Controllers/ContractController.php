@@ -490,7 +490,7 @@ class ContractController extends Controller
         }
 
         $user_id = Users::getIdByAddress($address);
-        $contract = Contract::getContract(['*'], [['id' => $contract_id, 'operator' => '=']]);
+        $contract = Contract::getContract(['*'], [['id' => $contract_id, 'operator' => '='], ['deleted' => 0, 'operator' => '=']]);
 
         if (empty($contract[0])) {
             return response(['msg' => 'Error contract not found', 'success' => false], 404)
@@ -559,7 +559,7 @@ class ContractController extends Controller
     public function get(Request $request, $id) {
         $address = $request->header('address');
         $user_id = Users::getIdByAddress($address);
-        $contract = Contract::getContract(['*'], [['id' => $id, 'operator' => '=']]);
+        $contract = Contract::getContract(['*'], [['id' => $id, 'operator' => '='], ['deleted' => 0, 'operator' => '=']]);
 
         if (empty($contract[0])) {
             return response(['msg' => 'Successfully', 'contract' => [], 'abi' => [], 'success' => true], 200)
@@ -618,7 +618,8 @@ class ContractController extends Controller
         }
 
         $user_id = Users::getIdByAddress($address);
-        $contracts = Contract::getContract(['id', 'project_name', 'collection_name', 'collection_symbol', 'updated_at', 'type_id'], [['user_id' => $user_id, 'operator' => '=']]);
+        $contracts = Contract::getContract(['id', 'project_name', 'collection_name', 'collection_symbol', 'updated_at', 'type_id'],
+            [['user_id' => $user_id, 'operator' => '='], ['deleted' => 0, 'operator' => '=']]);
 
         return response(['msg' => 'Successfully created', 'contracts' => Helper::snakeToCamel($contracts),'success' => true], 200)
             ->header('Content-Type', 'application/json');
@@ -632,7 +633,8 @@ class ContractController extends Controller
      */
     public function compile($address, $contract_id) {
         $user_id = Users::getIdByAddress($address);
-        $contract = Contract::getContract(['*'], [['id' => $contract_id, 'operator' => '='], ['user_id' => $user_id, 'operator' => '=']])[0];
+        $contract = Contract::getContract(['*'], [['id' => $contract_id, 'operator' => '='],
+            ['user_id' => $user_id, 'operator' => '='], ['deleted' => 0, 'operator' => '=']])[0];
 
         $className = str_replace(' ', '', $contract->collection_name);
 
@@ -665,9 +667,24 @@ class ContractController extends Controller
         $smart_contract_content = str_replace('$reserveAtTime', $contract->reserve_count, $smart_contract_content);
 
         $withdrawal_addresses = WithdrawalAddresses::getWihdrawalAddress($user_id, $contract_id);
-        $withdrawal_addresses = empty($withdrawal_addresses[0]) ? $address : $withdrawal_addresses[0]->address;
 
-        $smart_contract_content = str_replace('$withdrawAddress', $withdrawal_addresses, $smart_contract_content);
+
+        $withdrawal_addresses = empty($withdrawal_addresses[0]) ? $address : $withdrawal_addresses;
+        if (empty($withdrawal_addresses[0])) {
+            $smart_contract_content = str_replace('$withdrawAddress', $withdrawal_addresses, $smart_contract_content);
+            $smart_contract_content = str_replace('$address private OtherAddress$', 'address private OtherAddress', $smart_contract_content);
+        } else {
+            $variable_address = '';
+            $variable_withdraw = '';
+            $counter = 1;
+            foreach ($withdrawal_addresses as $withdrawal_address) {
+                $variable_address .= "address private OtherAddress$counter = $withdrawal_address->address\r\n";
+                $variable_withdraw .= "payable(OtherAddress$counter).transfer(balance * $withdrawal_address->percent / 100);\r\n";
+                $counter += 1;
+            }
+            $smart_contract_content = str_replace('$address private OtherAddress', $variable_address, $smart_contract_content);
+            $smart_contract_content = str_replace('$payable(OtherAddress).transfer(balance * 10000 / 10000);$', $variable_withdraw, $smart_contract_content);
+        }
 
         file_put_contents($new_smart_contract_path, $smart_contract_content);
 

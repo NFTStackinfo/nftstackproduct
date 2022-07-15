@@ -31,6 +31,7 @@ return new class extends Migration
             $table->bigInteger('user_id');
             $table->bigInteger('chain_id')->nullable();
             $table->bigInteger('type_id');
+            $table->smallInteger('deleted');
             $table->timestamps();
         });
     }

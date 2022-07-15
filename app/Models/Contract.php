@@ -29,7 +29,7 @@ class Contract extends Model implements AuthenticatableContract, AuthorizableCon
     protected $fillable = [
         'collection_name', 'project_name', 'collection_symbol', 'mainnet_address', 'rinkeby_address', 'metadata_uri', 'mint_price',
         'presale_mint_price', 'total_count', 'limit_per_transaction', 'limit_per_wallet', 'presale_limit_per_wallet',
-        'user_id', 'chain_id', 'type_id'
+        'user_id', 'chain_id', 'type_id', 'deleted'
     ];
 
 
@@ -55,6 +55,7 @@ class Contract extends Model implements AuthenticatableContract, AuthorizableCon
             'user_id' => $data['user_id'],
             'chain_id' => $data['chain_id'],
             'type_id' => $data['type_id'],
+            'deleted' => 0,
             'created_at' => date('Y-m-d H:i:s', time()),
             'updated_at' => date('Y-m-d H:i:s', time())
         ]);
