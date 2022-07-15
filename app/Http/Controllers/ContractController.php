@@ -618,7 +618,8 @@ class ContractController extends Controller
         }
 
         $user_id = Users::getIdByAddress($address);
-        $contracts = Contract::getContract(['id', 'project_name', 'collection_name', 'collection_symbol', 'updated_at', 'type_id'],
+        $contracts = Contract::getContract(['id', 'project_name', 'collection_name', 'collection_symbol',
+            'updated_at', 'type_id', 'mainnet_address', 'rinkeby_address'],
             [['user_id' => $user_id, 'operator' => '='], ['deleted' => 0, 'operator' => '=']]);
 
         return response(['msg' => 'Successfully created', 'contracts' => Helper::snakeToCamel($contracts),'success' => true], 200)
@@ -678,11 +679,11 @@ class ContractController extends Controller
             $variable_withdraw = '';
             $counter = 1;
             foreach ($withdrawal_addresses as $withdrawal_address) {
-                $variable_address .= "address private OtherAddress$counter = $withdrawal_address->address\r\n";
-                $variable_withdraw .= "payable(OtherAddress$counter).transfer(balance * $withdrawal_address->percent / 100);\r\n";
+                $variable_address .= "address private OtherAddress$counter = $withdrawal_address->address;\r\n    ";
+                $variable_withdraw .= "payable(OtherAddress$counter).transfer(balance * $withdrawal_address->percent / 100);\r\n        ";
                 $counter += 1;
             }
-            $smart_contract_content = str_replace('$address private OtherAddress', $variable_address, $smart_contract_content);
+            $smart_contract_content = str_replace('$address private OtherAddress$ = $withdrawAddress;', $variable_address, $smart_contract_content);
             $smart_contract_content = str_replace('$payable(OtherAddress).transfer(balance * 10000 / 10000);$', $variable_withdraw, $smart_contract_content);
         }
 
@@ -697,7 +698,7 @@ class ContractController extends Controller
 
         $base_path = base_path();
         shell_exec("rm -rf $base_path/build");
-        shell_exec("solc --abi $new_smart_contract_path -o $base_path/build");
+        $a = shell_exec("solc --abi $new_smart_contract_path -o $base_path/build");
         $abi = file_get_contents($base_path. '/build/' . $className . '.abi');
 
 
