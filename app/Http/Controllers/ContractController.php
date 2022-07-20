@@ -656,9 +656,9 @@ class ContractController extends Controller
 
         $smart_contract_content = file_get_contents($base_smart_contract_path);
 
-        $smart_contract_content = str_replace('(mintPrice)', $contract->mint_price, $smart_contract_content);
-        $smart_contract_content = str_replace('(preSaleMintPrice)',  $contract->presale_mint_price, $smart_contract_content);
-        $smart_contract_content = str_replace('(totalCount)', $contract->total_count, $smart_contract_content);
+        $smart_contract_content = str_replace('$mintPrice', $contract->mint_price, $smart_contract_content);
+        $smart_contract_content = str_replace('$preSaleMintPrice',  $contract->presale_mint_price, $smart_contract_content);
+        $smart_contract_content = str_replace('$totalCount', $contract->total_count, $smart_contract_content);
         $smart_contract_content = str_replace('$presaleLimitPerWallet', $contract->presale_limit_per_wallet, $smart_contract_content);
         $smart_contract_content = str_replace('$limitPerWallet', $contract->limit_per_wallet, $smart_contract_content);
         $smart_contract_content = str_replace('$className', $className, $smart_contract_content);
