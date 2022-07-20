@@ -314,6 +314,7 @@ class ContractController extends Controller
         }
         $update_data['chain_id'] = $chain_id;
         Contract::updateContract(['id' => $contract_id], $update_data);
+        //$this->verifyOnEtherscan($chain_id, $contract_id);
 
         return response(['msg' => 'Successfully updated', 'success' => true], 200)
             ->header('Content-Type', 'application/json');
@@ -562,7 +563,7 @@ class ContractController extends Controller
         $contract = Contract::getContract(['*'], [['id' => $id, 'operator' => '='], ['deleted' => 0, 'operator' => '=']]);
 
         if (empty($contract[0])) {
-            return response(['msg' => 'Successfully', 'contract' => [], 'abi' => [], 'success' => true], 200)
+            return response(['msg' => 'No Contract', 'contract' => [], 'abi' => [], 'success' => false], 200)
                 ->header('Content-Type', 'application/json');
         }
 
@@ -655,9 +656,9 @@ class ContractController extends Controller
 
         $smart_contract_content = file_get_contents($base_smart_contract_path);
 
-        $smart_contract_content = str_replace('$mintPrice', $contract->mint_price, $smart_contract_content);
-        $smart_contract_content = str_replace('$preSaleMintPrice',  $contract->presale_mint_price, $smart_contract_content);
-        $smart_contract_content = str_replace('$totalCount', $contract->total_count, $smart_contract_content);
+        $smart_contract_content = str_replace('(mintPrice)', $contract->mint_price, $smart_contract_content);
+        $smart_contract_content = str_replace('(preSaleMintPrice)',  $contract->presale_mint_price, $smart_contract_content);
+        $smart_contract_content = str_replace('(totalCount)', $contract->total_count, $smart_contract_content);
         $smart_contract_content = str_replace('$presaleLimitPerWallet', $contract->presale_limit_per_wallet, $smart_contract_content);
         $smart_contract_content = str_replace('$limitPerWallet', $contract->limit_per_wallet, $smart_contract_content);
         $smart_contract_content = str_replace('$className', $className, $smart_contract_content);
@@ -698,14 +699,67 @@ class ContractController extends Controller
 
         $base_path = base_path();
         shell_exec("rm -rf $base_path/build");
-        $a = shell_exec("solc --abi $new_smart_contract_path -o $base_path/build");
+        shell_exec("solc --abi $new_smart_contract_path -o $base_path/build");
         $abi = file_get_contents($base_path. '/build/' . $className . '.abi');
 
-
         $bytecode = shell_exec("solc $new_smart_contract_path --bin");
-        $bytecode = str_replace(array("\r", "\n"), '', $bytecode);
-        $bytecode = Helper::getStringBetween($bytecode, "$className.sol:$className =======Binary:", '=======');
+        $bytecode = Helper::getStringBetween($bytecode, "$className.sol:$className =======\\nBinary:\\n", '\n');
 
         return ['abi' => $abi, 'bytecode' => $bytecode];
+    }
+
+    //public function verifyOnEtherscan($chain_id, $contract_id) {
+    public function verifyOnEtherscan() {
+//        $contract = Contract::getContract(['*'], [['id' => $contract_id, 'operator' => '='], ['deleted' => 0, 'operator' => '=']])[0];
+//        $className = str_replace(' ', '', $contract->collection_name);
+//        $get_sol_content = file_get_contents(storage_path().'/UsersSmartContract/'.$contract->user_id.'/'.$contract_id.'/'.$className.'.sol');
+//        $get_verify_content = file_get_contents(storage_path().'/SmartContracts/EtherscanVerify.sol');
+//        $get_verify_content = str_replace('$$contract', $get_sol_content, $get_verify_content);
+
+        $className = 'Ashot55';
+        $get_sol_content = file_get_contents(storage_path().'/UsersSmartContract/1/7/'.$className.'.sol');
+        $get_verify_content = file_get_contents(storage_path().'/SmartContracts/EtherscanVerify.sol');
+
+        $get_verify_content = str_replace('$$contract', $get_sol_content, $get_verify_content);
+        $get_verify_content = str_replace('import "./ERC721Enumerable.sol";', '', $get_verify_content);
+        $get_verify_content = str_replace('import "./Ownable.sol";', '', $get_verify_content);
+        $get_verify_content = str_replace('// SPDX-License-Identifier: MIT', '', $get_verify_content);
+
+        file_put_contents(storage_path().'/SmartContracts/EtherscanVerify.sol',$get_verify_content );
+        $chain_id= 4;
+        if ($chain_id == 1) {
+            $etherscan_link = 'https://api.etherscan.io/api';
+            //$address = $contract->mainnet_address;
+        } elseif ($chain_id == 4) {
+            $etherscan_link = 'https://api-rinkeby.etherscan.io/api';
+            //$address = $contract->rinkeby_address;
+            $address = '0x1857e281AF4fc704992AbA66058b9cd04F827685';
+        }
+
+        $ch = curl_init();
+
+        $data = http_build_query([
+            'apikey' => 'BMQ7Z4F5CC1UM4IJYMUPXCV8T6T2FSY7SG',
+            'module' => 'contract',
+            'action' => 'verifysourcecode',
+            'contractaddress' => $address,
+            'codeformat' => 'solidity-single-file',
+            'contractname' => $className,
+            'compilerversion' => 'v0.8.15+commit.e14f2714',
+            'optimizationUsed' => '0',
+            'sourceCode' => $get_verify_content
+        ]);
+
+        curl_setopt($ch, CURLOPT_URL, $etherscan_link);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded'));
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        $server_output = curl_exec ($ch);
+        var_dump($server_output);
+        curl_close ($ch);
+
     }
 }
