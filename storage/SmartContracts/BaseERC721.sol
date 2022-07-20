@@ -1,7 +1,7 @@
 //
 // SPDX-License-Identifier: MIT
-// Made by: NFT Stack
-//          https://nftstack.info
+// Made by: Webly
+//          https://webly.pro
 //
 
 pragma solidity ^0.8.1;
